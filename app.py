@@ -63,7 +63,8 @@ if uploaded_files:
     
     with st.spinner("सभी पर्चियों का गहन विश्लेषण और अंतिम मिलान किया जा रहा है..."):
         try:
-            model = genai.GenerativeModel("gemini-1.5-flash-latest")
+            # सही मॉडल नाम
+            model = genai.GenerativeModel("gemini-1.5-flash")
             
             system_prompt = """
             आप एक अत्यंत चतुर, सटीक और वरिष्ठ ऑटोमैटिक अकाउंटेंट हैं। आपको 1 या 1 से अधिक पर्चियों/दस्तावेजों की फोटो दी गई हैं। सभी फोटो को आपस में मिलाकर निम्नलिखित नियमानुसार अंतिम हिसाब तैयार करें:
