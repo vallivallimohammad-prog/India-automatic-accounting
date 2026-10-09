@@ -1,19 +1,18 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import datetime
 
 st.set_page_config(page_title="ई-लेखा पोर्टल", layout="centered")
 
-# URL पैरामीटर से जांच करेंगे कि कौन सा पेज खोलना है
-query_params = st.query_params
-current_page = query_params.get("page", "home")
+# Session State से पेज कंट्रोल
+if 'current_page' not in st.session_state:
+    st.session_state['current_page'] = 'home'
 
 # ==========================================
-# 1. मुख्य होम पेज (HOME PAGE - स्क्रॉल डिब्बे के साथ)
+# 1. मुख्य होम पेज (HOME PAGE)
 # ==========================================
-if current_page == "home":
+if st.session_state['current_page'] == 'home':
 
-    # सरकारी हेडर, बैनर और अस्वीकरण
+    # स्टाइलिंग - सरकारी हेडर, बैनर और स्क्रॉलिंग डिब्बा
     st.markdown("""
     <style>
         .gov-header {
@@ -35,6 +34,42 @@ if current_page == "home":
         }
         .disclaimer-title { color: #a94442; font-weight: bold; font-size: 15px; margin-bottom: 8px; }
         .disclaimer-text { color: #721c24; font-size: 13px; line-height: 1.5; }
+        
+        /* बोर्ड स्टाइल का मुख्य स्क्रॉल डिब्बा */
+        .news-wrapper {
+            border: 2px solid #800000;
+            background-color: #fff8dc;
+            border-radius: 6px;
+            padding: 0px;
+            margin-top: 10px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        }
+        .news-header-title {
+            background-color: #800000;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 8px;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        
+        /* Streamlit बटन की सुंदर कस्टम डिज़ाइन */
+        div.stButton > button {
+            width: 100% !important;
+            background-color: #fff8dc !important;
+            color: #000080 !important;
+            font-weight: bold !important;
+            border: none !important;
+            border-bottom: 1px dashed #b8860b !important;
+            border-radius: 0px !important;
+            padding: 12px 10px !important;
+            text-align: left !important;
+            font-size: 13.5px !important;
+        }
+        div.stButton > button:hover {
+            background-color: #f0e68c !important;
+        }
     </style>
 
     <div class="gov-header">
@@ -53,146 +88,46 @@ if current_page == "home":
             यह प्रणाली केवल स्वचालित डिजिटल गणना एवं संदर्भ सहायता हेतु उपलब्ध कराई गई है। हिसाब-किताब में किसी भी प्रकार की भिन्नता, त्रुटि या गड़बड़ी होने पर प्रणाली/डेवलपर की कोई ज़िम्मेदारी नहीं होगी।
         </div>
     </div>
+
+    <div class="news-wrapper">
+        <div class="news-header-title">NEWS UPDATE</div>
+    </div>
     """, unsafe_allow_html=True)
 
-    # 2. शुरुआत में बटन और अंत में घूमते V आइकॉन वाला स्क्रॉलिंग बॉक्स
-    news_box_html = """
-    <style>
-        .news-container { 
-            border: 2px solid #800000; 
-            background-color: #fff8dc; 
-            padding: 5px; 
-            border-radius: 6px; 
-            font-family: Arial, sans-serif;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        .news-header { 
-            background-color: #800000; 
-            color: white; 
-            text-align: center; 
-            font-weight: bold; 
-            padding: 6px; 
-            font-size: 14px;
-            letter-spacing: 1px;
-        }
-        .news-item { 
-            padding: 10px 6px; 
-            border-bottom: 1px dashed #b8860b; 
-            font-size: 13px; 
-            font-weight: bold; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            color: #000080;
-        }
-        
-        /* शुरुआत का टच बटन */
-        .touch-btn {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 5px 9px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-right: 8px;
-            flex-shrink: 0;
-            box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
-            text-decoration: none;
-            display: inline-block;
-        }
-        .touch-btn:active {
-            background-color: #1e7e34;
-        }
+    # असली Streamlit बटन्स (टच करते ही 100% नया पेज खुलेगा)
+    if st.button("▶️ [ खोलें ] ⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान 🔄 [ V ]"):
+        st.session_state['current_page'] = 'pump'
+        st.rerun()
 
-        .news-text {
-            flex: 1;
-            padding-right: 6px;
-            line-height: 1.3;
-        }
+    if st.button("▶️ [ खोलें ] 🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता 🔄 [ V ]"):
+        st.session_state['current_page'] = 'kirana'
+        st.rerun()
 
-        /* अंत में बाएँ से दाएँ घूमता हुआ V आइकॉन */
-        .v-icon-box { 
-            background-color: #0d6efd; 
-            color: white; 
-            font-weight: bold; 
-            font-size: 11px; 
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px; 
-            flex-shrink: 0;
-            perspective: 1000px;
-        }
+    if st.button("▶️ [ खोलें ] 🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर 🔄 [ V ]"):
+        st.session_state['current_page'] = 'sabzi'
+        st.rerun()
 
-        .spinning-v {
-            display: inline-block;
-            animation: rotateY 2.5s infinite linear;
-        }
+    if st.button("▶️ [ खोलें ] 🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर 🔄 [ V ]"):
+        st.session_state['current_page'] = 'hardware'
+        st.rerun()
 
-        @keyframes rotateY {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(360deg); }
-        }
-    </style>
-
-    <div class="news-container">
-        <div class="news-header">NEWS UPDATE</div>
-        <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="250px">
-            
-            <div class="news-item">
-                <a class="touch-btn" href="?page=pump" target="_parent">खोलें ➔</a>
-                <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान</div>
-                <div class="v-icon-box"><span class="spinning-v">V</span></div>
-            </div>
-            
-            <div class="news-item">
-                <a class="touch-btn" href="?page=kirana" target="_parent">खोलें ➔</a>
-                <div class="news-text">🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता</div>
-                <div class="v-icon-box"><span class="spinning-v">V</span></div>
-            </div>
-            
-            <div class="news-item">
-                <a class="touch-btn" href="?page=sabzi" target="_parent">खोलें ➔</a>
-                <div class="news-text">🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर</div>
-                <div class="v-icon-box"><span class="spinning-v">V</span></div>
-            </div>
-
-            <div class="news-item">
-                <a class="touch-btn" href="?page=hardware" target="_parent">खोलें ➔</a>
-                <div class="news-text">🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर</div>
-                <div class="v-icon-box"><span class="spinning-v">V</span></div>
-            </div>
-
-            <div class="news-item">
-                <a class="touch-btn" href="?page=mobile" target="_parent">खोलें ➔</a>
-                <div class="news-text">📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता</div>
-                <div class="v-icon-box"><span class="spinning-v">V</span></div>
-            </div>
-
-        </marquee>
-    </div>
-    """
-
-    components.html(news_box_html, height=310)
+    if st.button("▶️ [ खोलें ] 📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता 🔄 [ V ]"):
+        st.session_state['current_page'] = 'mobile'
+        st.rerun()
 
 # ==========================================
-# 2. पेट्रोल पंप का नया पेज (PUMP PAGE)
+# 2. पेट्रोल पंप का पूरा नया पेज (PUMP PAGE)
 # ==========================================
-elif current_page == "pump":
+elif st.session_state['current_page'] == 'pump':
 
     if st.button("⬅️ मुख्य पेज पर वापस जाएँ (Back to Home)"):
-        st.query_params.clear()
+        st.session_state['current_page'] = 'home'
         st.rerun()
 
     st.markdown("---")
     st.title("⛽ पेट्रोल पंप नोज़ल एवं जमा-खर्च मिलान")
-    
+    st.info("यहाँ केवल पेट्रोल पंप का फॉर्म और फोटो अपलोड के विकल्प उपलब्ध हैं।")
+
     st.subheader("📸 1. नोज़ल रीडिंग पर्चियाँ अपलोड करें")
     col1, col2 = st.columns(2)
     with col1:
@@ -241,10 +176,10 @@ elif current_page == "pump":
 # ==========================================
 else:
     if st.button("⬅️ मुख्य पेज पर वापस जाएँ (Back to Home)"):
-        st.query_params.clear()
+        st.session_state['current_page'] = 'home'
         st.rerun()
 
     st.markdown("---")
     st.title("🚧 जल्द ही उपलब्ध होगा")
     st.write("इस सेवा का फॉर्म तैयार किया जा रहा है।")
-            
+    
