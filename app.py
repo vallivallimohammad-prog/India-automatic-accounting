@@ -1,11 +1,14 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import json
 from datetime import datetime
 
 st.set_page_config(page_title="ई-लेखा पोर्टल", layout="centered")
 
-# 1. ऊपर का सरकारी स्टाइल हेडर, बैनर और अस्वीकरण (Disclaimer)
+# URL पैराम्स चेक करना (क्लिक हैंडलिंग)
+query_params = st.query_params
+selected_from_url = query_params.get("page", None)
+
+# 1. ऊपर की आधिकारिक सरकारी स्टाइल पट्टी, मुख्य बैनर और अस्वीकरण
 st.markdown("""
 <style>
     .gov-header {
@@ -51,7 +54,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 2. ऑटो-स्क्रॉलिंग न्यूज़ अपडेट वाला बॉक्स (घूमता हुआ V और सही पोजीशन)
+# 2. ऑटो-स्क्रॉलिंग न्यूज़ बॉक्स (Left-to-Right 3D Flip V + Clickable Links)
 news_box_html = """
 <style>
     .news-container { 
@@ -70,26 +73,25 @@ news_box_html = """
         font-size: 14px;
         letter-spacing: 1px;
     }
-    
-    /* हर आइटम का लेआउट - फ्लेक्स अलाइनमेंट बॉटम पर सेट */
     .news-item { 
         padding: 10px 8px; 
         border-bottom: 1px dashed #b8860b; 
         font-size: 13.5px; 
         font-weight: bold; 
-        color: #000080; 
         display: flex; 
         justify-content: space-between; 
-        align-items: flex-end; /* V आइकॉन को हमेशा सबसे निचले सिरे पर रखने के लिए */
+        align-items: flex-end;
+        text-decoration: none;
+        color: #000080;
     }
-    
+    .news-item:hover {
+        background-color: #f0e68c;
+    }
     .news-text {
         flex: 1;
         padding-right: 8px;
         line-height: 1.4;
     }
-
-    /* घूमता हुआ V आइकॉन बॉक्स */
     .v-icon-box { 
         background-color: #0d6efd; 
         color: white; 
@@ -102,18 +104,19 @@ news_box_html = """
         justify-content: center;
         border-radius: 4px; 
         flex-shrink: 0;
-        margin-bottom: 2px; /* लाइन के सबसे नीचे स्थिर रहने के लिए */
+        margin-bottom: 2px;
+        perspective: 1000px;
     }
 
-    /* V को घुमाने का एनिमेशन (Spinning Animation) */
+    /* Left to Right 3D Rotating V Animation */
     .spinning-v {
         display: inline-block;
-        animation: spin 3s linear infinite;
+        animation: rotateLeftRight 2.5s infinite linear;
     }
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    @keyframes rotateLeftRight {
+        0% { transform: rotateY(0deg); }
+        100% { transform: rotateY(360deg); }
     }
 </style>
 
@@ -121,30 +124,30 @@ news_box_html = """
     <div class="news-header">NEWS UPDATE</div>
     <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="230px">
         
-        <div class="news-item">
+        <a class="news-item" href="?page=pump" target="_top">
             <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान</div>
             <div class="v-icon-box"><span class="spinning-v">V</span></div>
-        </div>
+        </a>
         
-        <div class="news-item">
+        <a class="news-item" href="?page=kirana" target="_top">
             <div class="news-text">🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता</div>
             <div class="v-icon-box"><span class="spinning-v">V</span></div>
-        </div>
+        </a>
         
-        <div class="news-item">
+        <a class="news-item" href="?page=sabzi" target="_top">
             <div class="news-text">🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर</div>
             <div class="v-icon-box"><span class="spinning-v">V</span></div>
-        </div>
+        </a>
 
-        <div class="news-item">
+        <a class="news-item" href="?page=hardware" target="_top">
             <div class="news-text">🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर</div>
             <div class="v-icon-box"><span class="spinning-v">V</span></div>
-        </div>
+        </a>
 
-        <div class="news-item">
+        <a class="news-item" href="?page=mobile" target="_top">
             <div class="news-text">📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता</div>
             <div class="v-icon-box"><span class="spinning-v">V</span></div>
-        </div>
+        </a>
 
     </marquee>
 </div>
@@ -154,17 +157,33 @@ components.html(news_box_html, height=280)
 
 st.markdown("---")
 
-# 3. सभी 5 सेवाओं का ड्रॉपडाउन विकल्प
+# 3. ड्रॉपडाउन लिस्ट और डिफ़ॉल्ट वैल्यू सेट करना
+options_list = [
+    "-- सेवा चुनें --",
+    "⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान",
+    "🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता",
+    "🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर",
+    "🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर",
+    "📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता"
+]
+
+# URL के हिसाब से सही ऑप्शन चुनना
+default_index = 0
+if selected_from_url == "pump":
+    default_index = 1
+elif selected_from_url == "kirana":
+    default_index = 2
+elif selected_from_url == "sabzi":
+    default_index = 3
+elif selected_from_url == "hardware":
+    default_index = 4
+elif selected_from_url == "mobile":
+    default_index = 5
+
 selected_option = st.selectbox(
     "👇 आगे बढ़ने के लिए कृपया अपनी सेवा चुनें:",
-    [
-        "-- सेवा चुनें --",
-        "⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान",
-        "🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता",
-        "🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर",
-        "🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर",
-        "📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता"
-    ]
+    options_list,
+    index=default_index
 )
 
 # 4. पेट्रोल पंप चुनने पर प्रोसेसिंग फॉर्म
@@ -253,5 +272,4 @@ if "1. पेट्रोल पंप" in selected_option:
             st.error("⚠️ कृपया तीनों पर्चियों की फोटो अपलोड करें!")
 
 elif selected_option != "-- सेवा चुनें --":
-    st.info(f"आपने **{selected_option}** विकल्प चुना है। इसका फॉर्म नीचे जल्द ही लोड होगा।")
-    
+    st.info(f"आपने **{selected_option}** विकल्प चुना है। इसका फॉर्म नीचे उपलब्ध है।")
