@@ -23,83 +23,6 @@ if st.session_state["current_page"] == "home":
     
     with col1:
         st.info("### 🧾 दैनिक जमा-खर्च व हिसाब")
-        st.write("8 नोज़ल रीडिंग, MS/HSD रेट, सुबह की टेस्टिंग, पर्चियाँ और दैनिक लेनदेन का पूरा हिसाब मिलाएँ।")
-        if st.button("👉 हिसाब-किताब पेज खोलें", type="primary", use_container_width=True):
-            st.session_state["current_page"] = "hisab_page"
-            st.rerun()
-
-    with col2:
-        st.success("### 📊 स्टॉक व बिक्री रिपोर्ट्स")
-        st.write("पुराने दैनिक हिसाब और बिक्री की समरी रिपोर्ट देखें।")
-        st.button("📁 रिपोर्ट्स देखें (शीघ्र उपलब्ध)", disabled=True, use_container_width=True)
-
-# ==========================================
-# 📄 2. नया हिसाब-किताब पेज
-# ==========================================
-elif st.session_state["current_page"] == "hisab_page":
-    
-    if st.button("⬅️ मुख्य मेनू (Home) पर वापस जाएँ"):
-        st.session_state["current_page"] = "home"
-        st.rerun()
-
-    st.title("📝 दैनिक जमा-खर्च व संपूर्ण हिसाब पर्ची")
-    st.markdown("---")
-
-    # ------------------------------------------
-    # 1. पेट्रोल (MS) व डीजल (HSD) की दर (Rate)
-    # ------------------------------------------
-    st.header("1. ईंधन दरें दर्ज करें (Fuel Rates in ₹/Liter)")
-    
-    col_rate1, col_rate2 = st.columns(2)
-    with col_rate1:
-        ms_rate = st.number_input("🔴 MS Rate - पेट्रोल (₹/लीटर)", min_value=0.0, value=104.50, step=0.50)
-    with col_rate2:
-        hsd_rate = st.number_input("🔵 HSD Rate - डीजल (₹/लीटर)", min_value=0.0, value=90.20, step=0.50)
-
-    st.markdown("---")
-
-    # ------------------------------------------
-    # 2. 8 नोज़ल रीडिंग एवं MS / HSD सिलेक्शन
-    # ------------------------------------------
-    st.header("2. नोज़ल रीडिंग एवं टाइप सेलेक्ट करें (8 नोज़ल्स)")
-    st.info("हर नोज़ल के लिए MS (पेट्रोल) या HSD (डीजल) चुनें। केवल उन्हीं नोज़लों का हिसाब जुड़ेगा जिनकी दोनों रीडिंग भरी होंगी।")
-
-    col_m_files, col_e_files = st.columns(2)
-
-    with col_m_files:
-        st.subheader("🌅 सुबह की नोज़ल पर्चियाँ (Opening)")
-        m_files = [st.file_uploader(f"सुबह की पर्ची {i}", type=["jpg", "jpeg", "png"], key=f"m_file_{i}") for i in range(1, 5)]
-
-    with col_e_files:
-        st.subheader("
-
-```python?code_reference&code_event_index=1
-# Generating full code for app.py
-app_code = '''import streamlit as st
-import pandas as pd
-
-# --- पेज सेटिंग्स ---
-st.set_page_config(
-    page_title="पेट्रोल पंप प्रबंधन",
-    page_icon="⛽",
-    layout="wide"
-)
-
-if "current_page" not in st.session_state:
-    st.session_state["current_page"] = "home"
-
-# ==========================================
-# 🏠 1. मुख्य मेनू (Home)
-# ==========================================
-if st.session_state["current_page"] == "home":
-    st.title("⛽ पेट्रोल पंप प्रबंधन प्रणाली")
-    st.markdown("---")
-    
-    st.subheader("📋 मुख्य विकल्प (Menu)")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.info("### 🧾 दैनिक जमा-खर्च व हिसाब")
         st.write("8 नोज़ल रीडिंग, MS/HSD सेलेक्ट, सुबह की टेस्टिंग, पर्चियाँ और दैनिक लेनदेन का पूरा हिसाब मिलाएँ।")
         if st.button("👉 हिसाब-किताब पेज खोलें", type="primary", use_container_width=True):
             st.session_state["current_page"] = "hisab_page"
@@ -274,7 +197,6 @@ elif st.session_state["current_page"] == "hisab_page":
         st.subheader("📊 1. नोज़ल-वार बिक्री विवरण (MS/HSD Separate)")
         st.table(df_nozzles)
         
-        # मुख्य गणनाएँ
         total_gross_liters = ms_gross_liters + hsd_gross_liters
         total_gross_amount = ms_gross_amount + hsd_gross_amount
         
@@ -288,14 +210,12 @@ elif st.session_state["current_page"] == "hisab_page":
         st.write(f"• **🔵 HSD (डीजल) कुल बिक्री:** {hsd_gross_liters:,.2f} लीटर (दर: ₹ {hsd_rate:,.2f}) = **₹ {hsd_gross_amount:,.2f}**")
         st.write(f"• **⛽ कुल ग्रॉस बिक्री:** {total_gross_liters:,.2f} लीटर = **₹ {total_gross_amount:,.2f}**")
         
-        # टेस्टिंग कटौती
         if testing_liters > 0 or testing_rupees > 0:
             st.write(f"• **🧪 टेस्टिंग कटौती ({test_fuel_type}):** {testing_liters:,.2f} लीटर = **₹ {testing_amount:,.2f}** (घटाया गया)")
             st.write(f"• **✅ शुद्ध देय राशि (Net Sale Amount):** **₹ {net_total_amount:,.2f}**")
         else:
             st.write(f"• **✅ शुद्ध देय राशि (Net Sale Amount):** **₹ {total_gross_amount:,.2f}**")
             
-        # लेनदेन समरी
         st.markdown("---")
         st.subheader("💰 3. दैनिक जमा-खर्च एवं शेष कैश मिलान")
         st.write(f"• **प्राप्त नकद / ऑनलाइन कुल जमा (Received):** ₹ {cash_received:,.2f}")
@@ -309,17 +229,18 @@ elif st.session_state["current_page"] == "hisab_page":
 
         st.markdown("---")
         
-        # रिपोर्ट टेक्स्ट / डाउनलोड
-        summary_text = f"पेट्रोल पंप दैनिक रिपोर्ट\n"
-        summary_text += f"MS Rate: Rs. {ms_rate}/L | HSD Rate: Rs. {hsd_rate}/L\n"
-        summary_text += f"MS Sale: {ms_gross_liters:.2f} L (Rs. {ms_gross_amount:.2f})\n"
-        summary_text += f"HSD Sale: {hsd_gross_liters:.2f} L (Rs. {hsd_gross_amount:.2f})\n"
-        summary_text += f"Gross Total: {total_gross_liters:.2f} L (Rs. {total_gross_amount:.2f})\n"
-        summary_text += f"Testing Deduction ({test_fuel_type}): {testing_liters:.2f} L (Rs. {testing_amount:.2f})\n"
-        summary_text += f"Net Total Amount: Rs. {net_total_amount:.2f}\n"
-        summary_text += f"Received Cash: Rs. {cash_received:.2f}\n"
-        summary_text += f"Expenses/Credit: Rs. {expenses_paid:.2f}\n"
-        summary_text += f"Net Cash Balance: Rs. {calculated_balance:.2f}\n"
+        summary_text = (
+            f"पेट्रोल पंप दैनिक रिपोर्ट\n"
+            f"MS Rate: Rs. {ms_rate}/L | HSD Rate: Rs. {hsd_rate}/L\n"
+            f"MS Sale: {ms_gross_liters:.2f} L (Rs. {ms_gross_amount:.2f})\n"
+            f"HSD Sale: {hsd_gross_liters:.2f} L (Rs. {hsd_gross_amount:.2f})\n"
+            f"Gross Total: {total_gross_liters:.2f} L (Rs. {total_gross_amount:.2f})\n"
+            f"Testing Deduction ({test_fuel_type}): {testing_liters:.2f} L (Rs. {testing_amount:.2f})\n"
+            f"Net Total Amount: Rs. {net_total_amount:.2f}\n"
+            f"Received Cash: Rs. {cash_received:.2f}\n"
+            f"Expenses/Credit: Rs. {expenses_paid:.2f}\n"
+            f"Net Cash Balance: Rs. {calculated_balance:.2f}\n"
+        )
         
         st.download_button(
             label="📥 संपूर्ण MS/HSD दैनिक रिपोर्ट डाउनलोड करें (Text)",
@@ -327,11 +248,5 @@ elif st.session_state["current_page"] == "hisab_page":
             file_name="Daily_Petrol_Pump_MS_HSD_Report.txt",
             mime="text/plain",
             use_container_width=True
-        )
-'''
-
-with open("app_updated.py", "w", encoding="utf-8") as f:
-    f.write(app_code)
-
-print("App code generated successfully!")
-
+    )
+        
