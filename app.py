@@ -8,7 +8,7 @@ st.set_page_config(page_title="ई-लेखा पोर्टल", layout="cen
 if 'current_page' not in st.session_state:
     st.session_state['current_page'] = 'home'
 
-# URL पैरामीटर चेक करना (पेज स्विच के लिए)
+# URL पैरामीटर चेक करना
 query_params = st.query_params
 selected_page = query_params.get("page", None)
 if selected_page:
@@ -19,7 +19,7 @@ if selected_page:
 # ==========================================
 if st.session_state['current_page'] == 'home':
 
-    # स्क्रीन में पूरा फ़िट करने के लिए CSS
+    # स्क्रीन में पूरा फ़िट करने और स्टाइलिंग का CSS
     st.markdown("""
     <style>
         .main .block-container {
@@ -50,9 +50,9 @@ if st.session_state['current_page'] == 'home':
         /* 3. सबसे नीचे वाला बैनर बॉक्स */
         .banner-box {
             background-color: #1a2b40; color: white; text-align: center;
-            padding: 8px; border-radius: 4px; margin-top: 10px; margin-bottom: 8px;
+            padding: 10px; border-radius: 4px; margin-top: 10px; margin-bottom: 8px;
         }
-        .banner-title { font-size: 13px; font-weight: bold; margin-bottom: 2px; }
+        .banner-title { font-size: 13.5px; font-weight: bold; margin-bottom: 2px; }
         .banner-subtitle { font-size: 8.5px; color: #b0c4de; }
     </style>
 
@@ -71,7 +71,7 @@ if st.session_state['current_page'] == 'home':
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. 50%-50% परफेक्ट स्क्रीन-फिट ग्रिड (बाईं तरफ छोटे बटन + दाहिनी तरफ स्क्रॉल डिब्बा)
+    # 3. 50%-50% परफेक्ट स्क्रीन-फिट व बढ़ी हुई हाइट (Height-Increased) वाला लेआउट
     grid_html = """
     <style>
         .split-grid {
@@ -86,15 +86,19 @@ if st.session_state['current_page'] == 'home':
         /* बाईं तरफ की बटन पट्टी */
         .left-panel {
             background-color: #f8f9fa;
-            border: 1px solid #004080;
+            border: 1.5px solid #004080;
             border-radius: 4px;
             overflow: hidden;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
         }
         .left-header {
             background-color: #004080;
             color: white;
-            padding: 4px 2px;
-            font-size: 9.5px;
+            padding: 5px 2px;
+            font-size: 10px;
             font-weight: bold;
             text-align: center;
         }
@@ -103,14 +107,15 @@ if st.session_state['current_page'] == 'home':
             background-color: #0059b3;
             color: white !important;
             font-weight: bold;
-            font-size: 8.5px;
-            padding: 6px 4px;
+            font-size: 9px;
+            padding: 10px 5px;
             text-decoration: none;
             border-bottom: 1px solid #004080;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             box-sizing: border-box;
+            cursor: pointer;
         }
         .btn-link:active, .btn-link:hover {
             background-color: #003366;
@@ -125,20 +130,21 @@ if st.session_state['current_page'] == 'home':
             border-radius: 4px;
             box-sizing: border-box;
             overflow: hidden;
+            height: 250px;
         }
         .news-header {
             background-color: #800000;
             color: white;
             text-align: center;
             font-weight: bold;
-            padding: 3px 2px;
-            font-size: 9.5px;
+            padding: 5px 2px;
+            font-size: 10px;
             letter-spacing: 0.5px;
         }
         .news-item {
-            padding: 4px 2px;
+            padding: 6px 2px;
             border-bottom: 1px dashed #b8860b;
-            font-size: 8px;
+            font-size: 8.5px;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
@@ -148,15 +154,15 @@ if st.session_state['current_page'] == 'home':
         .news-text {
             flex: 1;
             padding-right: 2px;
-            line-height: 1.15;
+            line-height: 1.2;
         }
         .v-icon-box {
             background-color: #0d6efd;
             color: white;
             font-weight: bold;
             font-size: 7.5px;
-            width: 12px;
-            height: 12px;
+            width: 13px;
+            height: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -175,20 +181,20 @@ if st.session_state['current_page'] == 'home':
     </style>
 
     <div class="split-grid">
-        <!-- बाईं तरफ: असली वर्किंग टच बटन -->
+        <!-- बाईं तरफ: 100% वर्किंग लिंक बटन -->
         <div class="left-panel">
             <div class="left-header">📁 मुख्य सेवाएँ</div>
-            <a class="btn-link" href="?page=pump" target="_parent">⛽ 1. पेट्रोल पंप नोज़ल ➔</a>
-            <a class="btn-link" href="?page=kirana" target="_parent">🛒 2. किराना एवं जनरल ➔</a>
-            <a class="btn-link" href="?page=sabzi" target="_parent">🥦 3. सब्जी व फल मंडी ➔</a>
-            <a class="btn-link" href="?page=hardware" target="_parent">🔩 4. हार्डवेयर व लोहा ➔</a>
-            <a class="btn-link" href="?page=mobile" target="_parent">📱 5. मोबाइल-इलेक्ट्रॉनिक्स ➔</a>
+            <a class="btn-link" onclick="navigate('pump')">⛽ 1. पेट्रोल पंप नोज़ल ➔</a>
+            <a class="btn-link" onclick="navigate('kirana')">🛒 2. किराना एवं जनरल ➔</a>
+            <a class="btn-link" onclick="navigate('sabzi')">🥦 3. सब्जी व फल मंडी ➔</a>
+            <a class="btn-link" onclick="navigate('hardware')">🔩 4. हार्डवेयर व लोहा ➔</a>
+            <a class="btn-link" onclick="navigate('mobile')">📱 5. मोबाइल-इलेक्ट्रॉनिक्स ➔</a>
         </div>
 
-        <!-- दाहिनी तरफ: 3D घूमते V आइकॉन वाला स्क्रॉल बॉक्स -->
+        <!-- दाहिनी तरफ: ऊँचा स्क्रॉल बॉक्स (Height Increased) -->
         <div class="right-panel">
             <div class="news-header">NEWS UPDATE</div>
-            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="150px">
+            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="210px">
                 <div class="news-item">
                     <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा व नोज़ल रीडिंग</div>
                     <div class="v-icon-box"><span class="spinning-v">V</span></div>
@@ -212,9 +218,19 @@ if st.session_state['current_page'] == 'home':
             </marquee>
         </div>
     </div>
+
+    <script>
+        function navigate(page) {
+            try {
+                window.top.location.href = window.top.location.pathname + "?page=" + page;
+            } catch(e) {
+                window.location.href = "?page=" + page;
+            }
+        }
+    </script>
     """
 
-    components.html(grid_html, height=195)
+    components.html(grid_html, height=260)
 
     # 4. सबसे नीचे वाला मुख्य बैनर
     st.markdown("""
@@ -253,7 +269,7 @@ elif st.session_state['current_page'] == 'pump':
             
             report_data = [
                 {"इंधन प्रकार": "MS (पेट्रोल)", "नोज़ल": "Nozzle 1", "सुबह रीडिंग": "12450.00", "शाम रीडिंग": "12850.00", "बिक्री (लीटर)": "400 Ltr", "दर": "₹108.50", "कुल रुपये": "₹43,400"},
-                {"इंधन प्रकार": "HSD (डीजल)", "नोज़ल": "Nozzle 2", "सुबह रीडिंग": "50200.00", "शाम रीडिंग": "51000.00", "बिक्री (लीटर)": "800 Ltr", "दर": "₹94.00", "कुल रुपये": "₹75,200"}
+                {"इंधन प्रकार": "HSD (डीजल)", "नोज़al": "Nozzle 2", "सुबह रीडिंग": "50200.00", "शाम रीडिंग": "51000.00", "बिक्री (लीटर)": "800 Ltr", "दर": "₹94.00", "कुल रुपये": "₹75,200"}
             ]
             st.table(report_data)
             
