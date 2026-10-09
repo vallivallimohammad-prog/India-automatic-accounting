@@ -1,31 +1,29 @@
 import streamlit as st
 import pandas as pd
 
-# --- पेज कॉन्फ़िगरेशन ---
+# --- पेज सेटिंग्स ---
 st.set_page_config(
     page_title="पेट्रोल पंप प्रबंधन",
     page_icon="⛽",
     layout="wide"
 )
 
-# सेशन स्टेट द्वारा पेज नेविगेशन
 if "current_page" not in st.session_state:
     st.session_state["current_page"] = "home"
 
 # ==========================================
-# 🏠 1. मुख्य पेज (Home Page)
+# 🏠 1. मुख्य मेनू (Home)
 # ==========================================
 if st.session_state["current_page"] == "home":
     st.title("⛽ पेट्रोल पंप प्रबंधन प्रणाली")
     st.markdown("---")
     
     st.subheader("📋 मुख्य विकल्प (Menu)")
-    
     col1, col2 = st.columns(2)
     
     with col1:
         st.info("### 🧾 दैनिक जमा-खर्च व हिसाब")
-        st.write("8 नोज़ल रीडिंग, पर्ची अपलोड, सुबह की टेस्टिंग और दैनिक रजिस्टर का स्वचालित हिसाब मिलाने के लिए नीचे क्लिक करें।")
+        st.write("8 नोज़ल रीडिंग, MS/HSD रेट, सुबह की टेस्टिंग, पर्चियाँ और दैनिक लेनदेन का पूरा हिसाब मिलाएँ।")
         if st.button("👉 हिसाब-किताब पेज खोलें", type="primary", use_container_width=True):
             st.session_state["current_page"] = "hisab_page"
             st.rerun()
@@ -44,12 +42,104 @@ elif st.session_state["current_page"] == "hisab_page":
         st.session_state["current_page"] = "home"
         st.rerun()
 
-    st.title("📝 दैनिक जमा-खर्च व हिसाब पर्ची")
+    st.title("📝 दैनिक जमा-खर्च व संपूर्ण हिसाब पर्ची")
     st.markdown("---")
 
-    # (A) 8 नोज़ल रीडिंग - पर्ची + टाइपिंग
-    st.header("1. नोज़ल रीडिंग दर्ज करें (8 नोज़ल्स)")
-    st.info("आप चाहें तो पर्चियों की फोटो अपलोड करें या नीचे सीधे रीडिंग टाइप करें। दोनों तरीकों से सही हिसाब मिल जाएगा।")
+    # ------------------------------------------
+    # 1. पेट्रोल (MS) व डीजल (HSD) की दर (Rate)
+    # ------------------------------------------
+    st.header("1. ईंधन दरें दर्ज करें (Fuel Rates in ₹/Liter)")
+    
+    col_rate1, col_rate2 = st.columns(2)
+    with col_rate1:
+        ms_rate = st.number_input("🔴 MS Rate - पेट्रोल (₹/लीटर)", min_value=0.0, value=104.50, step=0.50)
+    with col_rate2:
+        hsd_rate = st.number_input("🔵 HSD Rate - डीजल (₹/लीटर)", min_value=0.0, value=90.20, step=0.50)
+
+    st.markdown("---")
+
+    # ------------------------------------------
+    # 2. 8 नोज़ल रीडिंग एवं MS / HSD सिलेक्शन
+    # ------------------------------------------
+    st.header("2. नोज़ल रीडिंग एवं टाइप सेलेक्ट करें (8 नोज़ल्स)")
+    st.info("हर नोज़ल के लिए MS (पेट्रोल) या HSD (डीजल) चुनें। केवल उन्हीं नोज़लों का हिसाब जुड़ेगा जिनकी दोनों रीडिंग भरी होंगी।")
+
+    col_m_files, col_e_files = st.columns(2)
+
+    with col_m_files:
+        st.subheader("🌅 सुबह की नोज़ल पर्चियाँ (Opening)")
+        m_files = [st.file_uploader(f"सुबह की पर्ची {i}", type=["jpg", "jpeg", "png"], key=f"m_file_{i}") for i in range(1, 5)]
+
+    with col_e_files:
+        st.subheader("
+
+```python?code_reference&code_event_index=1
+# Generating full code for app.py
+app_code = '''import streamlit as st
+import pandas as pd
+
+# --- पेज सेटिंग्स ---
+st.set_page_config(
+    page_title="पेट्रोल पंप प्रबंधन",
+    page_icon="⛽",
+    layout="wide"
+)
+
+if "current_page" not in st.session_state:
+    st.session_state["current_page"] = "home"
+
+# ==========================================
+# 🏠 1. मुख्य मेनू (Home)
+# ==========================================
+if st.session_state["current_page"] == "home":
+    st.title("⛽ पेट्रोल पंप प्रबंधन प्रणाली")
+    st.markdown("---")
+    
+    st.subheader("📋 मुख्य विकल्प (Menu)")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.info("### 🧾 दैनिक जमा-खर्च व हिसाब")
+        st.write("8 नोज़ल रीडिंग, MS/HSD सेलेक्ट, सुबह की टेस्टिंग, पर्चियाँ और दैनिक लेनदेन का पूरा हिसाब मिलाएँ।")
+        if st.button("👉 हिसाब-किताब पेज खोलें", type="primary", use_container_width=True):
+            st.session_state["current_page"] = "hisab_page"
+            st.rerun()
+
+    with col2:
+        st.success("### 📊 स्टॉक व बिक्री रिपोर्ट्स")
+        st.write("पुराने दैनिक हिसाब और बिक्री की समरी रिपोर्ट देखें।")
+        st.button("📁 रिपोर्ट्स देखें (शीघ्र उपलब्ध)", disabled=True, use_container_width=True)
+
+# ==========================================
+# 📄 2. नया हिसाब-किताब पेज
+# ==========================================
+elif st.session_state["current_page"] == "hisab_page":
+    
+    if st.button("⬅️ मुख्य मेनू (Home) पर वापस जाएँ"):
+        st.session_state["current_page"] = "home"
+        st.rerun()
+
+    st.title("📝 दैनिक जमा-खर्च व संपूर्ण हिसाब पर्ची")
+    st.markdown("---")
+
+    # ------------------------------------------
+    # 1. पेट्रोल (MS) व डीजल (HSD) की दर (Rate)
+    # ------------------------------------------
+    st.header("1. ईंधन दरें दर्ज करें (Fuel Rates in ₹/Liter)")
+    
+    col_rate1, col_rate2 = st.columns(2)
+    with col_rate1:
+        ms_rate = st.number_input("🔴 MS Rate - पेट्रोल (₹/लीटर)", min_value=0.0, value=104.50, step=0.50)
+    with col_rate2:
+        hsd_rate = st.number_input("🔵 HSD Rate - डीजल (₹/लीटर)", min_value=0.0, value=90.20, step=0.50)
+
+    st.markdown("---")
+
+    # ------------------------------------------
+    # 2. 8 नोज़ल रीडिंग एवं MS / HSD सिलेक्शन
+    # ------------------------------------------
+    st.header("2. नोज़ल रीडिंग एवं टाइप सेलेक्ट करें (8 नोज़ल्स)")
+    st.info("हर नोज़ल के लिए MS (पेट्रोल) या HSD (डीजल) सेलेक्ट करें। केवल उन्हीं नोज़लों का हिसाब जुड़ेगा जिनकी सुबह और शाम दोनों रीडिंग भरी होंगी।")
 
     col_m_files, col_e_files = st.columns(2)
 
@@ -61,44 +151,60 @@ elif st.session_state["current_page"] == "hisab_page":
         st.subheader("🌆 शाम की नोज़ल पर्चियाँ (Closing)")
         e_files = [st.file_uploader(f"शाम की पर्ची {i}", type=["jpg", "jpeg", "png"], key=f"e_file_{i}") for i in range(1, 5)]
 
-    st.markdown("#### 🔢 मैन्युअल नोज़ल रीडिंग दर्ज करें (8 नोज़ल्स):")
-    col_read1, col_read2 = st.columns(2)
-
+    st.markdown("#### 🔢 मैन्युअल नोज़ल रीडिंग व फ़्यूल टाइप (8 नोज़ल्स):")
+    
     morning_readings = {}
     evening_readings = {}
+    fuel_types = {}
 
-    with col_read1:
-        st.markdown("**सुबह की रीडिंग (Opening):**")
-        for i in range(1, 9):
+    for i in range(1, 9):
+        c1, c2, c3 = st.columns([2, 3, 3])
+        with c1:
+            fuel_types[f"Nozzle {i}"] = st.selectbox(
+                f"नोज़ल {i} का तेल",
+                options=["MS (पेट्रोल)", "HSD (डीजल)"],
+                key=f"fuel_type_{i}"
+            )
+        with c2:
             morning_readings[f"Nozzle {i}"] = st.number_input(
-                f"नोज़ल {i} (सुबह)", min_value=0.0, value=0.0, step=0.1, key=f"m_read_{i}"
+                f"नोज़ल {i} (सुबह)", min_value=0.0, value=0.0, step=0.01, key=f"m_read_{i}"
             )
-
-    with col_read2:
-        st.markdown("**शाम की रीडिंग (Closing):**")
-        for i in range(1, 9):
+        with c3:
             evening_readings[f"Nozzle {i}"] = st.number_input(
-                f"नोज़ल {i} (शाम)", min_value=0.0, value=0.0, step=0.1, key=f"e_read_{i}"
+                f"नोज़ल {i} (शाम)", min_value=0.0, value=0.0, step=0.01, key=f"e_read_{i}"
             )
 
     st.markdown("---")
 
-    # (B) सुबह की टेस्टिंग
-    st.header("2. सुबह की टेस्टिंग")
-    st.caption("यदि कोई टेस्टिंग हुई है तो लीटर या रुपये दर्ज करें। यदि खाली छोड़ेंगे तो नीचे हिसाब में प्रदर्शित नहीं होगी।")
-
-    col_t1, col_t2 = st.columns(2)
+    # ------------------------------------------
+    # 3. सुबह की टेस्टिंग (Testing Oil)
+    # ------------------------------------------
+    st.header("3. सुबह की टेस्टिंग")
+    col_t1, col_t2, col_t3 = st.columns(3)
     with col_t1:
-        testing_liters = st.number_input("टेस्टिंग का तेल (लीटर)", min_value=0.0, value=0.0, step=0.5)
+        test_fuel_type = st.selectbox("टेस्टिंग का तेल टाइप", options=["MS (पेट्रोल)", "HSD (डीजल)"])
     with col_t2:
-        testing_rupees = st.number_input("टेस्टिंग के रुपये (₹)", min_value=0.0, value=0.0, step=1.0)
+        testing_liters = st.number_input("टेस्टिंग का तेल (लीटर)", min_value=0.0, value=0.0, step=0.5)
+    with col_t3:
+        applicable_rate = ms_rate if test_fuel_type == "MS (पेट्रोल)" else hsd_rate
+        default_test_rs = testing_liters * applicable_rate
+        testing_rupees = st.number_input("टेस्टिंग के रुपये (₹)", min_value=0.0, value=default_test_rs, step=1.0)
 
     st.markdown("---")
 
-    # (C) दैनिक जमा-खर्च पर्चियाँ (4 ऑप्शन)
-    st.header("3. हाथ से लिखे दैनिक रजिस्टर की पर्चियाँ")
-    st.caption("रजिस्टर की फोटो अपलोड करें (4 अलग-अलग ऑप्शन)।")
+    # ------------------------------------------
+    # 4. दिनभर के लेनदेन का हिसाब (Cash/Credit)
+    # ------------------------------------------
+    st.header("4. दिनभर के लेनदेन का हिसाब (कैश / जमा-खर्च / उधारी)")
+    st.caption("आप चाहें तो लेनदेन टाइप करके भरें या रजिस्टर की पर्चियाँ अपलोड करें।")
 
+    col_trans1, col_trans2 = st.columns(2)
+    with col_trans1:
+        cash_received = st.number_input("💵 कुल प्राप्त नकद / ऑनलाइन भुगतान (Received ₹)", min_value=0.0, value=0.0, step=100.0)
+    with col_trans2:
+        expenses_paid = st.number_input("💸 कुल दिया गया / खर्च / उधारी (Expenses/Credit ₹)", min_value=0.0, value=0.0, step=100.0)
+
+    st.subheader("📸 या हाथ के रजिस्टर की पर्चियाँ अपलोड करें (4 ऑप्शन)")
     reg_cols = st.columns(4)
     register_files = []
     for i in range(1, 5):
@@ -109,65 +215,123 @@ elif st.session_state["current_page"] == "hisab_page":
 
     st.markdown("---")
 
-    # (D) स्वचालित हिसाब मिलाएँ बटन
+    # ------------------------------------------
+    # 5. स्वचालित हिसाब मिलाएँ
+    # ------------------------------------------
     if st.button("🔄 स्वचालित हिसाब मिलाएँ", type="primary", use_container_width=True):
-        st.success("हिसाब सफलतापूर्वक मिल गया है!")
-        
         nozzle_data = []
-        total_gross_liters = 0.0
+        
+        ms_gross_liters = 0.0
+        hsd_gross_liters = 0.0
+        
+        ms_gross_amount = 0.0
+        hsd_gross_amount = 0.0
         
         for i in range(1, 9):
+            f_type = fuel_types[f"Nozzle {i}"]
+            rate = ms_rate if f_type == "MS (पेट्रोल)" else hsd_rate
+            
             m_val = morning_readings[f"Nozzle {i}"]
             e_val = evening_readings[f"Nozzle {i}"]
-            diff = max(0.0, e_val - m_val) if e_val >= m_val else 0.0
-            total_gross_liters += diff
+            
+            if m_val > 0 and e_val > 0 and e_val >= m_val:
+                diff = e_val - m_val
+                status_str = f"{diff:,.2f} L"
+                amt = diff * rate
+                
+                if f_type == "MS (पेट्रोल)":
+                    ms_gross_liters += diff
+                    ms_gross_amount += amt
+                else:
+                    hsd_gross_liters += diff
+                    hsd_gross_amount += amt
+            elif m_val > 0 and e_val == 0:
+                diff = 0.0
+                amt = 0.0
+                status_str = "0.00 L (शाम की रीडिंग खाली)"
+            elif m_val == 0 and e_val > 0:
+                diff = 0.0
+                amt = 0.0
+                status_str = "0.00 L (सुबह की रीडिंग खाली)"
+            else:
+                diff = 0.0
+                amt = 0.0
+                status_str = "0.00 L"
+
             nozzle_data.append({
                 "नोज़ल नं.": f"नोज़ल {i}",
-                "सुबह रीडिंग": f"{m_val:,.2f}",
-                "शाम रीडिंग": f"{e_val:,.2f}",
-                "कुल बिक्री (लीटर)": f"{diff:,.2f} L"
+                "ईंधन टाइप": f_type,
+                "सुबह रीडिंग": f"{m_val:,.2f}" if m_val > 0 else "---",
+                "शाम रीडिंग": f"{e_val:,.2f}" if e_val > 0 else "---",
+                "बिक्री (लीटर)": status_str,
+                "लागू दर (Rate)": f"₹ {rate:,.2f}",
+                "बिक्री (रुपये ₹)": f"₹ {amt:,.2f}"
             })
         
-        df_nozzles = pd.DataFrame(nozzle_data)
+        st.success("हिसाब सफलतापूर्वक मिल गया है!")
         
-        st.subheader("📊 1. नोज़ल-वार बिक्री विवरण")
+        df_nozzles = pd.DataFrame(nozzle_data)
+        st.subheader("📊 1. नोज़ल-वार बिक्री विवरण (MS/HSD Separate)")
         st.table(df_nozzles)
         
-        net_liters = max(0.0, total_gross_liters - testing_liters)
+        # मुख्य गणनाएँ
+        total_gross_liters = ms_gross_liters + hsd_gross_liters
+        total_gross_amount = ms_gross_amount + hsd_gross_amount
         
-        st.subheader("📝 2. शुद्ध बिक्री एवं फाइनल हिसाब समरी")
-        st.write(f"• **कुल मीटर बिक्री (ग्रॉस):** {total_gross_liters:,.2f} लीटर")
+        test_rate = ms_rate if test_fuel_type == "MS (पेट्रोल)" else hsd_rate
+        testing_amount = testing_rupees if testing_rupees > 0 else (testing_liters * test_rate)
         
+        net_total_amount = max(0.0, total_gross_amount - testing_amount)
+        
+        st.subheader("📝 2. संपूर्ण बिक्री एवं ईंधन-वार समरी")
+        st.write(f"• **🔴 MS (पेट्रोल) कुल बिक्री:** {ms_gross_liters:,.2f} लीटर (दर: ₹ {ms_rate:,.2f}) = **₹ {ms_gross_amount:,.2f}**")
+        st.write(f"• **🔵 HSD (डीजल) कुल बिक्री:** {hsd_gross_liters:,.2f} लीटर (दर: ₹ {hsd_rate:,.2f}) = **₹ {hsd_gross_amount:,.2f}**")
+        st.write(f"• **⛽ कुल ग्रॉस बिक्री:** {total_gross_liters:,.2f} लीटर = **₹ {total_gross_amount:,.2f}**")
+        
+        # टेस्टिंग कटौती
         if testing_liters > 0 or testing_rupees > 0:
-            test_str = "• **टेस्टिंग कटौती:** "
-            parts = []
-            if testing_liters > 0:
-                parts.append(f"{testing_liters:,.2f} लीटर")
-            if testing_rupees > 0:
-                parts.append(f"₹ {testing_rupees:,.2f}")
-            test_str += " / ".join(parts) + " (घटाया गया)"
-            st.write(test_str)
-            st.write(f"• **शुद्ध बिक्री (Net Sales):** **{net_liters:,.2f} लीटर**")
+            st.write(f"• **🧪 टेस्टिंग कटौती ({test_fuel_type}):** {testing_liters:,.2f} लीटर = **₹ {testing_amount:,.2f}** (घटाया गया)")
+            st.write(f"• **✅ शुद्ध देय राशि (Net Sale Amount):** **₹ {net_total_amount:,.2f}**")
         else:
-            st.write(f"• **शुद्ध बिक्री (Net Sales):** **{total_gross_liters:,.2f} लीटर**")
+            st.write(f"• **✅ शुद्ध देय राशि (Net Sale Amount):** **₹ {total_gross_amount:,.2f}**")
             
-        uploaded_reg_count = sum(1 for f in register_files if f is not None)
-        if uploaded_reg_count > 0:
-            st.write(f"• **हाथ से लिखे रजिस्टर की पर्चियाँ:** {uploaded_reg_count} पर्ची/पर्चियों का हिसाब मिलाया गया।")
+        # लेनदेन समरी
+        st.markdown("---")
+        st.subheader("💰 3. दैनिक जमा-खर्च एवं शेष कैश मिलान")
+        st.write(f"• **प्राप्त नकद / ऑनलाइन कुल जमा (Received):** ₹ {cash_received:,.2f}")
+        st.write(f"• **कुल दिया गया / खर्च / उधारी (Paid/Out):** ₹ {expenses_paid:,.2f}")
+        
+        calculated_balance = cash_received - expenses_paid
+        st.write(f"• **निवल कैश शेष (Net Cash Balance):** **₹ {calculated_balance:,.2f}**")
+        
+        if len(register_files) > 0:
+            st.write(f"• **अपलोड की गई रजिस्टर पर्चियाँ:** {len(register_files)} फोटो मिलाई गईं।")
 
         st.markdown("---")
         
-        # टेक्स्ट / CSV डाउनलोड विकल्प (बिना किसी बाहरी लाइब्रेरी एरर के)
+        # रिपोर्ट टेक्स्ट / डाउनलोड
         summary_text = f"पेट्रोल पंप दैनिक रिपोर्ट\n"
-        summary_text += f"कुल ग्रॉस बिक्री: {total_gross_liters} L\n"
-        summary_text += f"टेस्टिंग: {testing_liters} L / Rs.{testing_rupees}\n"
-        summary_text += f"शुद्ध बिक्री: {net_liters} L\n"
+        summary_text += f"MS Rate: Rs. {ms_rate}/L | HSD Rate: Rs. {hsd_rate}/L\n"
+        summary_text += f"MS Sale: {ms_gross_liters:.2f} L (Rs. {ms_gross_amount:.2f})\n"
+        summary_text += f"HSD Sale: {hsd_gross_liters:.2f} L (Rs. {hsd_gross_amount:.2f})\n"
+        summary_text += f"Gross Total: {total_gross_liters:.2f} L (Rs. {total_gross_amount:.2f})\n"
+        summary_text += f"Testing Deduction ({test_fuel_type}): {testing_liters:.2f} L (Rs. {testing_amount:.2f})\n"
+        summary_text += f"Net Total Amount: Rs. {net_total_amount:.2f}\n"
+        summary_text += f"Received Cash: Rs. {cash_received:.2f}\n"
+        summary_text += f"Expenses/Credit: Rs. {expenses_paid:.2f}\n"
+        summary_text += f"Net Cash Balance: Rs. {calculated_balance:.2f}\n"
         
         st.download_button(
-            label="📥 दैनिक रिपोर्ट डाउनलोड करें (Text)",
+            label="📥 संपूर्ण MS/HSD दैनिक रिपोर्ट डाउनलोड करें (Text)",
             data=summary_text,
-            file_name="Daily_Report.txt",
+            file_name="Daily_Petrol_Pump_MS_HSD_Report.txt",
             mime="text/plain",
             use_container_width=True
-    )
-    
+        )
+'''
+
+with open("app_updated.py", "w", encoding="utf-8") as f:
+    f.write(app_code)
+
+print("App code generated successfully!")
+
