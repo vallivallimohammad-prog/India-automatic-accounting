@@ -1,18 +1,19 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import datetime
 
-st.set_page_config(page_title="ई-लेखा पोर्टल", layout="centered")
+st.set_page_config(page_title="ई-लेखा पोर्टल", layout="wide")
 
-# Session State से पेज कंट्रोल
+# Session State से पेज मैनेजमेंट
 if 'current_page' not in st.session_state:
     st.session_state['current_page'] = 'home'
 
 # ==========================================
-# 1. मुख्य होम पेज (HOME PAGE)
+# 1. मुख्य होम पेज (HOME PAGE - Board Site Layout)
 # ==========================================
 if st.session_state['current_page'] == 'home':
 
-    # स्टाइलिंग - सरकारी हेडर, बैनर और स्क्रॉलिंग डिब्बा
+    # ऊपर की आधिकारिक सरकारी स्टाइल पट्टी
     st.markdown("""
     <style>
         .gov-header {
@@ -20,103 +21,205 @@ if st.session_state['current_page'] == 'home':
             border-radius: 4px; display: flex; justify-content: space-between;
             align-items: center; border-bottom: 3px solid #ff9933; margin-bottom: 15px;
         }
-        .gov-header-title { font-size: 14px; font-weight: bold; }
+        .gov-header-title { font-size: 15px; font-weight: bold; }
         .gov-header-sub { font-size: 12px; opacity: 0.9; }
-        .banner-box {
-            background-color: #1a2b40; color: white; text-align: center;
-            padding: 20px 15px; border-radius: 8px; margin-bottom: 15px;
-        }
-        .banner-title { font-size: 20px; font-weight: bold; margin-bottom: 8px; }
-        .banner-subtitle { font-size: 13px; color: #b0c4de; }
-        .disclaimer-box {
-            background-color: #fff5f5; border-left: 5px solid #d9534f;
-            border: 1px solid #f5c6cb; padding: 15px; border-radius: 4px; margin-bottom: 15px;
-        }
-        .disclaimer-title { color: #a94442; font-weight: bold; font-size: 15px; margin-bottom: 8px; }
-        .disclaimer-text { color: #721c24; font-size: 13px; line-height: 1.5; }
-        
-        /* बोर्ड स्टाइल का मुख्य स्क्रॉल डिब्बा */
-        .news-wrapper {
-            border: 2px solid #800000;
-            background-color: #fff8dc;
-            border-radius: 6px;
-            padding: 0px;
-            margin-top: 10px;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
-        }
-        .news-header-title {
-            background-color: #800000;
+
+        /* नीली साइडबार स्टाइल (Board Site Style) */
+        .sidebar-title {
+            background-color: #004080;
             color: white;
-            text-align: center;
-            font-weight: bold;
             padding: 8px;
-            font-size: 14px;
-            letter-spacing: 1px;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 4px 4px 0 0;
         }
         
-        /* Streamlit बटन की सुंदर कस्टम डिज़ाइन */
+        /* नीली साइडबार के अंदर के बटन की स्टाइल */
         div.stButton > button {
             width: 100% !important;
-            background-color: #fff8dc !important;
-            color: #000080 !important;
+            background-color: #0059b3 !important;
+            color: white !important;
             font-weight: bold !important;
             border: none !important;
-            border-bottom: 1px dashed #b8860b !important;
+            border-bottom: 1px solid #004080 !important;
             border-radius: 0px !important;
-            padding: 12px 10px !important;
+            padding: 10px 8px !important;
             text-align: left !important;
-            font-size: 13.5px !important;
+            font-size: 12px !important;
         }
         div.stButton > button:hover {
-            background-color: #f0e68c !important;
+            background-color: #004080 !important;
+            color: #ffcc00 !important;
         }
+
+        /* बीच का बैनर व चेतावनी बोर्ड */
+        .banner-box {
+            background-color: #1a2b40; color: white; text-align: center;
+            padding: 15px; border-radius: 8px; margin-bottom: 15px;
+        }
+        .banner-title { font-size: 18px; font-weight: bold; margin-bottom: 6px; }
+        .banner-subtitle { font-size: 12px; color: #b0c4de; }
+        
+        .disclaimer-box {
+            background-color: #fff5f5; border-left: 5px solid #d9534f;
+            border: 1px solid #f5c6cb; padding: 15px; border-radius: 4px;
+        }
+        .disclaimer-title { color: #a94442; font-weight: bold; font-size: 14px; margin-bottom: 6px; }
+        .disclaimer-text { color: #721c24; font-size: 12.5px; line-height: 1.5; }
     </style>
 
     <div class="gov-header">
         <div class="gov-header-title">🏛️ राष्ट्रीय ई-लेखा एवं बही-खाता सत्यापन पोर्टल</div>
         <div class="gov-header-sub">भारत सरकार / राज्य डिजिटल सेवा</div>
     </div>
-
-    <div class="banner-box">
-        <div class="banner-title">स्वचालित ईंधन बही-खाता एवं डिजिटल मिलान प्रणाली</div>
-        <div class="banner-subtitle">Automated Fuel Station Reconciliation & Ledger Audit System</div>
-    </div>
-
-    <div class="disclaimer-box">
-        <div class="disclaimer-title">⚠️ आवश्यक सूचना एवं कानूनी अस्वीकरण (Disclaimer):</div>
-        <div class="disclaimer-text">
-            यह प्रणाली केवल स्वचालित डिजिटल गणना एवं संदर्भ सहायता हेतु उपलब्ध कराई गई है। हिसाब-किताब में किसी भी प्रकार की भिन्नता, त्रुटि या गड़बड़ी होने पर प्रणाली/डेवलपर की कोई ज़िम्मेदारी नहीं होगी।
-        </div>
-    </div>
-
-    <div class="news-wrapper">
-        <div class="news-header-title">NEWS UPDATE</div>
-    </div>
     """, unsafe_allow_html=True)
 
-    # असली Streamlit बटन्स (टच करते ही 100% नया पेज खुलेगा)
-    if st.button("▶️ [ खोलें ] ⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान 🔄 [ V ]"):
-        st.session_state['current_page'] = 'pump'
-        st.rerun()
+    # 3-कॉलम लेआउट (राजस्थान बोर्ड जैसा)
+    col_left, col_center, col_right = st.columns([1.1, 1.8, 1.1])
 
-    if st.button("▶️ [ खोलें ] 🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता 🔄 [ V ]"):
-        st.session_state['current_page'] = 'kirana'
-        st.rerun()
+    # ----------------------------------------------------
+    # हिस्सा 1: बाईं तरफ की नीली पट्टी (असली टच बटन)
+    # ----------------------------------------------------
+    with col_left:
+        st.markdown('<div class="sidebar-title">📁 मुख्य सेवाएँ (Quick Links)</div>', unsafe_allow_html=True)
+        
+        if st.button("⛽ 1. पेट्रोल पंप नोज़ल मिलान ➔"):
+            st.session_state['current_page'] = 'pump'
+            st.rerun()
 
-    if st.button("▶️ [ खोलें ] 🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर 🔄 [ V ]"):
-        st.session_state['current_page'] = 'sabzi'
-        st.rerun()
+        if st.button("🛒 2. किराना एवं जनरल स्टोर ➔"):
+            st.session_state['current_page'] = 'kirana'
+            st.rerun()
 
-    if st.button("▶️ [ खोलें ] 🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर 🔄 [ V ]"):
-        st.session_state['current_page'] = 'hardware'
-        st.rerun()
+        if st.button("🥦 3. सब्जी व फल मंडी रजिस्टर ➔"):
+            st.session_state['current_page'] = 'sabzi'
+            st.rerun()
 
-    if st.button("▶️ [ खोलें ] 📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता 🔄 [ V ]"):
-        st.session_state['current_page'] = 'mobile'
-        st.rerun()
+        if st.button("🔩 4. हार्डवेयर व लोहा ट्रेडर्स ➔"):
+            st.session_state['current_page'] = 'hardware'
+            st.rerun()
+
+        if st.button("📱 5. मोबाइल व इलेक्ट्रॉनिक्स ➔"):
+            st.session_state['current_page'] = 'mobile'
+            st.rerun()
+
+    # ----------------------------------------------------
+    # हिस्सा 2: बीच का भाग (मुख्य बैनर + चेतावनी बोर्ड)
+    # ----------------------------------------------------
+    with col_center:
+        st.markdown("""
+        <div class="banner-box">
+            <div class="banner-title">स्वचालित ईंधन बही-खाता एवं डिजिटल मिलान प्रणाली</div>
+            <div class="banner-subtitle">Automated Fuel Station Reconciliation & Ledger Audit System</div>
+        </div>
+
+        <div class="disclaimer-box">
+            <div class="disclaimer-title">⚠️ आवश्यक सूचना एवं कानूनी अस्वीकरण (Disclaimer):</div>
+            <div class="disclaimer-text">
+                यह प्रणाली केवल स्वचालित डिजिटल गणना एवं संदर्भ सहायता हेतु उपलब्ध कराई गई है। हिसाब-किताब में किसी भी प्रकार की भिन्नता, त्रुटि या गड़बड़ी होने पर प्रणाली/डेवलपर की कोई ज़िम्मेदारी नहीं होगी। उपयोगकर्ता स्वयं अपने अंतिम मिलान एवं बही-खाते के लिए ज़िम्मेदार होंगे।
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ----------------------------------------------------
+    # हिस्सा 3: दाईं तरफ का ऑटो-स्क्रॉलिंग बॉक्स (घूमता हुआ V)
+    # ----------------------------------------------------
+    with col_right:
+        news_box_html = """
+        <style>
+            .news-container { 
+                border: 2px solid #800000; 
+                background-color: #fff8dc; 
+                padding: 4px; 
+                border-radius: 4px; 
+                font-family: Arial, sans-serif;
+                box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+            }
+            .news-header { 
+                background-color: #800000; 
+                color: white; 
+                text-align: center; 
+                font-weight: bold; 
+                padding: 5px; 
+                font-size: 12px;
+                letter-spacing: 1px;
+            }
+            .news-item { 
+                padding: 8px 4px; 
+                border-bottom: 1px dashed #b8860b; 
+                font-size: 11.5px; 
+                font-weight: bold; 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: flex-end;
+                color: #000080;
+            }
+            .news-text {
+                flex: 1;
+                padding-right: 4px;
+                line-height: 1.3;
+            }
+            .v-icon-box { 
+                background-color: #0d6efd; 
+                color: white; 
+                font-weight: bold; 
+                font-size: 10px; 
+                width: 18px;
+                height: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 3px; 
+                flex-shrink: 0;
+                perspective: 1000px;
+            }
+            .spinning-v {
+                display: inline-block;
+                animation: rotateY 2.5s infinite linear;
+            }
+            @keyframes rotateY {
+                0% { transform: rotateY(0deg); }
+                100% { transform: rotateY(360deg); }
+            }
+        </style>
+
+        <div class="news-container">
+            <div class="news-header">NEWS UPDATE</div>
+            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="230px">
+                
+                <div class="news-item">
+                    <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान</div>
+                    <div class="v-icon-box"><span class="spinning-v">V</span></div>
+                </div>
+                
+                <div class="news-item">
+                    <div class="news-text">🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता</div>
+                    <div class="v-icon-box"><span class="spinning-v">V</span></div>
+                </div>
+                
+                <div class="news-item">
+                    <div class="news-text">🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर</div>
+                    <div class="v-icon-box"><span class="spinning-v">V</span></div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-text">🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर</div>
+                    <div class="v-icon-box"><span class="spinning-v">V</span></div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-text">📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता</div>
+                    <div class="v-icon-box"><span class="spinning-v">V</span></div>
+                </div>
+
+            </marquee>
+        </div>
+        """
+        components.html(news_box_html, height=270)
 
 # ==========================================
-# 2. पेट्रोल पंप का पूरा नया पेज (PUMP PAGE)
+# 2. पेट्रोल पंप का नया अलग पेज (PUMP PAGE)
 # ==========================================
 elif st.session_state['current_page'] == 'pump':
 
@@ -126,7 +229,6 @@ elif st.session_state['current_page'] == 'pump':
 
     st.markdown("---")
     st.title("⛽ पेट्रोल पंप नोज़ल एवं जमा-खर्च मिलान")
-    st.info("यहाँ केवल पेट्रोल पंप का फॉर्म और फोटो अपलोड के विकल्प उपलब्ध हैं।")
 
     st.subheader("📸 1. नोज़ल रीडिंग पर्चियाँ अपलोड करें")
     col1, col2 = st.columns(2)
@@ -182,4 +284,4 @@ else:
     st.markdown("---")
     st.title("🚧 जल्द ही उपलब्ध होगा")
     st.write("इस सेवा का फॉर्म तैयार किया जा रहा है।")
-    
+            
