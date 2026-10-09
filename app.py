@@ -8,20 +8,15 @@ st.set_page_config(page_title="ई-लेखा पोर्टल", layout="cen
 if 'current_page' not in st.session_state:
     st.session_state['current_page'] = 'home'
 
-# URL पैरामीटर चेक करना
-query_params = st.query_params
-selected_page = query_params.get("page", None)
-if selected_page:
-    st.session_state['current_page'] = selected_page
-
 # ==========================================
 # 1. मुख्य होम पेज (HOME PAGE)
 # ==========================================
 if st.session_state['current_page'] == 'home':
 
-    # स्क्रीन में पूरा फ़िट करने और स्टाइलिंग का CSS
+    # स्क्रीन में 100% स्क्रीन-फिट और रिस्पॉन्सिव CSS
     st.markdown("""
     <style>
+        /* मुख्य कंटेनर की पैडिंग और चौड़ाई सेट करना */
         .main .block-container {
             padding-left: 4px !important;
             padding-right: 4px !important;
@@ -47,10 +42,57 @@ if st.session_state['current_page'] == 'home':
         .disclaimer-title { color: #a94442; font-weight: bold; font-size: 10.5px; margin-bottom: 2px; }
         .disclaimer-text { color: #721c24; font-size: 9.5px; line-height: 1.25; }
 
-        /* 3. सबसे नीचे वाला बैनर बॉक्स */
+        /* 3. बाईं तरफ की नीली बटन पट्टी */
+        .sidebar-title {
+            background-color: #004080;
+            color: white;
+            padding: 5px;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* असली Streamlit बटनों की स्टाइलिंग (Compact Size) */
+        div.stButton > button {
+            width: 100% !important;
+            background-color: #0059b3 !important;
+            color: white !important;
+            font-weight: bold !important;
+            border: none !important;
+            border-bottom: 1px solid #004080 !important;
+            border-radius: 0px !important;
+            padding: 8px 3px !important;
+            text-align: left !important;
+            font-size: 9px !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            cursor: pointer !important;
+        }
+        div.stButton > button:hover, div.stButton > button:active {
+            background-color: #003366 !important;
+            color: #ffcc00 !important;
+        }
+
+        /* मोबाइल में भी दो कॉलम को ज़बरदस्ती 50%-50% साइड-बाय-साइड रखना */
+        [data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            gap: 4px !important;
+            width: 100% !important;
+        }
+        [data-testid="column"] {
+            width: 49% !important;
+            flex: 1 1 49% !important;
+            min-width: 0 !important;
+        }
+
+        /* 4. सबसे नीचे वाला बैनर बॉक्स */
         .banner-box {
             background-color: #1a2b40; color: white; text-align: center;
-            padding: 10px; border-radius: 4px; margin-top: 10px; margin-bottom: 8px;
+            padding: 10px; border-radius: 4px; margin-top: 12px; margin-bottom: 8px;
         }
         .banner-title { font-size: 13.5px; font-weight: bold; margin-bottom: 2px; }
         .banner-subtitle { font-size: 8.5px; color: #b0c4de; }
@@ -71,130 +113,101 @@ if st.session_state['current_page'] == 'home':
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. 50%-50% परफेक्ट स्क्रीन-फिट व बढ़ी हुई हाइट (Height-Increased) वाला लेआउट
-    grid_html = """
-    <style>
-        .split-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5px;
-            width: 100%;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+    # 3. आमने-सामने दो हिस्से (Left: Native Working Buttons | Right: Scroll Box)
+    col_left, col_right = st.columns(2)
 
-        /* बाईं तरफ की बटन पट्टी */
-        .left-panel {
-            background-color: #f8f9fa;
-            border: 1.5px solid #004080;
-            border-radius: 4px;
-            overflow: hidden;
-            height: 250px;
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-        }
-        .left-header {
-            background-color: #004080;
-            color: white;
-            padding: 5px 2px;
-            font-size: 10px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .btn-link {
-            display: block;
-            background-color: #0059b3;
-            color: white !important;
-            font-weight: bold;
-            font-size: 9px;
-            padding: 10px 5px;
-            text-decoration: none;
-            border-bottom: 1px solid #004080;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            box-sizing: border-box;
-            cursor: pointer;
-        }
-        .btn-link:active, .btn-link:hover {
-            background-color: #003366;
-            color: #ffcc00 !important;
-        }
+    # ----------------------------------------------------
+    # बाईं तरफ (Left Side): असली वर्किंग बटन (No iframe, No Search Bar)
+    # ----------------------------------------------------
+    with col_left:
+        st.markdown('<div class="sidebar-title">📁 मुख्य सेवाएँ</div>', unsafe_allow_html=True)
+        
+        if st.button("⛽ 1. पेट्रोल पंप नोज़ल ➔", key="btn_pump"):
+            st.session_state['current_page'] = 'pump'
+            st.rerun()
 
-        /* दाहिनी तरफ का स्क्रॉल डिब्बा */
-        .right-panel {
-            border: 1.5px solid #800000;
-            background-color: #fff8dc;
-            padding: 2px;
-            border-radius: 4px;
-            box-sizing: border-box;
-            overflow: hidden;
-            height: 250px;
-        }
-        .news-header {
-            background-color: #800000;
-            color: white;
-            text-align: center;
-            font-weight: bold;
-            padding: 5px 2px;
-            font-size: 10px;
-            letter-spacing: 0.5px;
-        }
-        .news-item {
-            padding: 6px 2px;
-            border-bottom: 1px dashed #b8860b;
-            font-size: 8.5px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            color: #000080;
-        }
-        .news-text {
-            flex: 1;
-            padding-right: 2px;
-            line-height: 1.2;
-        }
-        .v-icon-box {
-            background-color: #0d6efd;
-            color: white;
-            font-weight: bold;
-            font-size: 7.5px;
-            width: 13px;
-            height: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 2px;
-            flex-shrink: 0;
-            perspective: 1000px;
-        }
-        .spinning-v {
-            display: inline-block;
-            animation: rotateY 2.5s infinite linear;
-        }
-        @keyframes rotateY {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(360deg); }
-        }
-    </style>
+        if st.button("🛒 2. किराना एवं जनरल ➔", key="btn_kirana"):
+            st.session_state['current_page'] = 'kirana'
+            st.rerun()
 
-    <div class="split-grid">
-        <!-- बाईं तरफ: 100% वर्किंग लिंक बटन -->
-        <div class="left-panel">
-            <div class="left-header">📁 मुख्य सेवाएँ</div>
-            <a class="btn-link" onclick="navigate('pump')">⛽ 1. पेट्रोल पंप नोज़ल ➔</a>
-            <a class="btn-link" onclick="navigate('kirana')">🛒 2. किराना एवं जनरल ➔</a>
-            <a class="btn-link" onclick="navigate('sabzi')">🥦 3. सब्जी व फल मंडी ➔</a>
-            <a class="btn-link" onclick="navigate('hardware')">🔩 4. हार्डवेयर व लोहा ➔</a>
-            <a class="btn-link" onclick="navigate('mobile')">📱 5. मोबाइल-इलेक्ट्रॉनिक्स ➔</a>
-        </div>
+        if st.button("🥦 3. सब्जी व फल मंडी ➔", key="btn_sabzi"):
+            st.session_state['current_page'] = 'sabzi'
+            st.rerun()
 
-        <!-- दाहिनी तरफ: ऊँचा स्क्रॉल बॉक्स (Height Increased) -->
-        <div class="right-panel">
+        if st.button("🔩 4. हार्डवेयर व लोहा ➔", key="btn_hardware"):
+            st.session_state['current_page'] = 'hardware'
+            st.rerun()
+
+        if st.button("📱 5. मोबाइल-इलेक्ट्रॉनिक्स ➔", key="btn_mobile"):
+            st.session_state['current_page'] = 'mobile'
+            st.rerun()
+
+    # ----------------------------------------------------
+    # दाहिनी तरफ (Right Side): 3D रोटेटिंग V आइकॉन वाला स्क्रॉल डिब्बा
+    # ----------------------------------------------------
+    with col_right:
+        news_box_html = """
+        <style>
+            .news-container { 
+                border: 1.5px solid #800000; 
+                background-color: #fff8dc; 
+                padding: 2px; 
+                border-radius: 3px; 
+                font-family: Arial, sans-serif;
+                box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+                box-sizing: border-box;
+            }
+            .news-header { 
+                background-color: #800000; 
+                color: white; 
+                text-align: center; 
+                font-weight: bold; 
+                padding: 3px 2px; 
+                font-size: 9.5px;
+                letter-spacing: 0.5px;
+            }
+            .news-item { 
+                padding: 5px 2px; 
+                border-bottom: 1px dashed #b8860b; 
+                font-size: 8.5px; 
+                font-weight: bold; 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: flex-end;
+                color: #000080;
+            }
+            .news-text {
+                flex: 1;
+                padding-right: 2px;
+                line-height: 1.2;
+            }
+            .v-icon-box { 
+                background-color: #0d6efd; 
+                color: white; 
+                font-weight: bold; 
+                font-size: 7.5px; 
+                width: 12px;
+                height: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 2px; 
+                flex-shrink: 0;
+                perspective: 1000px;
+            }
+            .spinning-v {
+                display: inline-block;
+                animation: rotateY 2.5s infinite linear;
+            }
+            @keyframes rotateY {
+                0% { transform: rotateY(0deg); }
+                100% { transform: rotateY(360deg); }
+            }
+        </style>
+
+        <div class="news-container">
             <div class="news-header">NEWS UPDATE</div>
-            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="210px">
+            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="185px">
                 <div class="news-item">
                     <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा व नोज़ल रीडिंग</div>
                     <div class="v-icon-box"><span class="spinning-v">V</span></div>
@@ -217,22 +230,10 @@ if st.session_state['current_page'] == 'home':
                 </div>
             </marquee>
         </div>
-    </div>
+        """
+        components.html(news_box_html, height=205)
 
-    <script>
-        function navigate(page) {
-            try {
-                window.top.location.href = window.top.location.pathname + "?page=" + page;
-            } catch(e) {
-                window.location.href = "?page=" + page;
-            }
-        }
-    </script>
-    """
-
-    components.html(grid_html, height=260)
-
-    # 4. सबसे नीचे वाला मुख्य बैनर
+    # 4. इन दोनों के ठीक नीचे सबसे नीचे वाला मुख्य बैनर
     st.markdown("""
     <div class="banner-box">
         <div class="banner-title">स्वचालित खाता मिलान प्रणाली</div>
@@ -241,12 +242,11 @@ if st.session_state['current_page'] == 'home':
     """, unsafe_allow_html=True)
 
 # ==========================================
-# 2. पेट्रोल पंप का नया अलग पेज (PUMP PAGE)
+# 2. पेट्रोल पंप का पूरा नया अलग पेज (PUMP PAGE)
 # ==========================================
 elif st.session_state['current_page'] == 'pump':
 
     if st.button("⬅️ मुख्य पेज पर वापस जाएँ (Back to Home)"):
-        st.query_params.clear()
         st.session_state['current_page'] = 'home'
         st.rerun()
 
@@ -269,7 +269,7 @@ elif st.session_state['current_page'] == 'pump':
             
             report_data = [
                 {"इंधन प्रकार": "MS (पेट्रोल)", "नोज़ल": "Nozzle 1", "सुबह रीडिंग": "12450.00", "शाम रीडिंग": "12850.00", "बिक्री (लीटर)": "400 Ltr", "दर": "₹108.50", "कुल रुपये": "₹43,400"},
-                {"इंधन प्रकार": "HSD (डीजल)", "नोज़al": "Nozzle 2", "सुबह रीडिंग": "50200.00", "शाम रीडिंग": "51000.00", "बिक्री (लीटर)": "800 Ltr", "दर": "₹94.00", "कुल रुपये": "₹75,200"}
+                {"इंधन प्रकार": "HSD (डीजल)", "नोज़ल": "Nozzle 2", "सुबह रीडिंग": "50200.00", "शाम रीडिंग": "51000.00", "बिक्री (लीटर)": "800 Ltr", "दर": "₹94.00", "कुल रुपये": "₹75,200"}
             ]
             st.table(report_data)
             
@@ -301,11 +301,10 @@ elif st.session_state['current_page'] == 'pump':
 # ==========================================
 else:
     if st.button("⬅️ मुख्य पेज पर वापस जाएँ (Back to Home)"):
-        st.query_params.clear()
         st.session_state['current_page'] = 'home'
         st.rerun()
 
     st.markdown("---")
     st.title("🚧 जल्द ही उपलब्ध होगा")
     st.write("इस सेवा का फॉर्म तैयार किया जा रहा है।")
-    
+        
