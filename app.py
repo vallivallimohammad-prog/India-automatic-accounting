@@ -3,16 +3,16 @@ import datetime
 
 st.set_page_config(page_title="ई-लेखा पोर्टल", layout="centered")
 
-# पेज कंट्रोल के लिए Session State (होम पेज या नया पेज)
-if 'current_page' not in st.session_state:
-    st.session_state['current_page'] = 'home'
+# URL पैरामीटर से चेक करेंगे कि कौन सा पेज खोलना है
+query_params = st.query_params
+current_page = query_params.get("page", "home")
 
 # ==========================================
-# 1. मुख्य होम पेज (HOME PAGE)
+# 1. मुख्य होम पेज (HOME PAGE - स्क्रॉल डिब्बे के साथ)
 # ==========================================
-if st.session_state['current_page'] == 'home':
+if current_page == "home":
 
-    # ऊपर का सरकारी स्टाइल हेडर, बैनर और अस्वीकरण
+    # सरकारी हेडर, बैनर और अस्वीकरण
     st.markdown("""
     <style>
         .gov-header {
@@ -34,23 +34,6 @@ if st.session_state['current_page'] == 'home':
         }
         .disclaimer-title { color: #a94442; font-weight: bold; font-size: 15px; margin-bottom: 8px; }
         .disclaimer-text { color: #721c24; font-size: 13px; line-height: 1.5; }
-        
-        /* स्क्रॉल पट्टी और बटन स्टाइल */
-        .stButton>button {
-            width: 100%;
-            text-align: left;
-            background-color: #fff8dc;
-            color: #000080;
-            font-weight: bold;
-            border: 1px solid #b8860b;
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 8px;
-        }
-        .stButton>button:hover {
-            background-color: #f0e68c;
-            color: #000;
-        }
     </style>
 
     <div class="gov-header">
@@ -71,52 +54,137 @@ if st.session_state['current_page'] == 'home':
     </div>
     """, unsafe_allow_html=True)
 
-    st.subheader("📋 सेवाओं की सूची (आगे बढ़ने के लिए किसी एक पर टच करें):")
+    # 2. राजस्थान बोर्ड जैसा एक सिंगल ऑटो-स्क्रॉलिंग बॉक्स
+    news_box_html = """
+    <style>
+        .news-container { 
+            border: 2px solid #800000; 
+            background-color: #fff8dc; 
+            padding: 5px; 
+            border-radius: 6px; 
+            font-family: Arial, sans-serif;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        }
+        .news-header { 
+            background-color: #800000; 
+            color: white; 
+            text-align: center; 
+            font-weight: bold; 
+            padding: 6px; 
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        .news-item { 
+            padding: 10px 8px; 
+            border-bottom: 1px dashed #b8860b; 
+            font-size: 13.5px; 
+            font-weight: bold; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end;
+            text-decoration: none;
+            color: #000080;
+            cursor: pointer;
+        }
+        .news-item:hover {
+            background-color: #f0e68c;
+        }
+        .news-text {
+            flex: 1;
+            padding-right: 8px;
+            line-height: 1.4;
+        }
+        .v-icon-box { 
+            background-color: #0d6efd; 
+            color: white; 
+            font-weight: bold; 
+            font-size: 11px; 
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px; 
+            flex-shrink: 0;
+            margin-bottom: 2px;
+            perspective: 1000px;
+        }
 
-    # स्क्रॉल वाली पट्टी के मेन्यू बटन (टच करते ही नया पेज खुलेगा)
-    if st.button("⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान 🔄 [ V ]"):
-        st.session_state['current_page'] = 'pump'
-        st.rerun()
+        /* 3D Left to Right Rotating V Animation */
+        .spinning-v {
+            display: inline-block;
+            animation: rotateY 2.5s infinite linear;
+        }
 
-    if st.button("🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता 🔄 [ V ]"):
-        st.session_state['current_page'] = 'kirana'
-        st.rerun()
+        @keyframes rotateY {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+    </style>
 
-    if st.button("🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर 🔄 [ V ]"):
-        st.session_state['current_page'] = 'sabzi'
-        st.rerun()
+    <div class="news-container">
+        <div class="news-header">NEWS UPDATE</div>
+        <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="250px">
+            
+            <a class="news-item" onclick="openPage('pump')">
+                <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान</div>
+                <div class="v-icon-box"><span class="spinning-v">V</span></div>
+            </a>
+            
+            <a class="news-item" onclick="openPage('kirana')">
+                <div class="news-text">🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता</div>
+                <div class="v-icon-box"><span class="spinning-v">V</span></div>
+            </a>
+            
+            <a class="news-item" onclick="openPage('sabzi')">
+                <div class="news-text">🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर</div>
+                <div class="v-icon-box"><span class="spinning-v">V</span></div>
+            </a>
 
-    if st.button("🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर 🔄 [ V ]"):
-        st.session_state['current_page'] = 'hardware'
-        st.rerun()
+            <a class="news-item" onclick="openPage('hardware')">
+                <div class="news-text">🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर</div>
+                <div class="v-icon-box"><span class="spinning-v">V</span></div>
+            </a>
 
-    if st.button("📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता 🔄 [ V ]"):
-        st.session_state['current_page'] = 'mobile'
-        st.rerun()
+            <a class="news-item" onclick="openPage('mobile')">
+                <div class="news-text">📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता</div>
+                <div class="v-icon-box"><span class="spinning-v">V</span></div>
+            </a>
+
+        </marquee>
+    </div>
+
+    <script>
+        function openPage(pageName) {
+            window.top.location.href = window.top.location.pathname + "?page=" + pageName;
+        }
+    </script>
+    """
+
+    import streamlit.components.v1 as components
+    components.html(news_box_html, height=310)
 
 # ==========================================
-# 2. पेट्रोल पंप का नया अलग पेज (NEW PAGE)
+# 2. पेट्रोल पंप का पूरा नया पेज (PUMP PAGE)
 # ==========================================
-elif st.session_state['current_page'] == 'pump':
+elif current_page == "pump":
 
-    # मुख्य पेज पर वापस जाने का बटन
     if st.button("⬅️ मुख्य पेज पर वापस जाएँ (Back to Home)"):
-        st.session_state['current_page'] = 'home'
+        st.query_params.clear()
         st.rerun()
 
     st.markdown("---")
     st.title("⛽ पेट्रोल पंप नोज़ल एवं जमा-खर्च मिलान")
-    st.info("यहाँ केवल पेट्रोल पंप का फॉर्म और फोटो अपलोड के विकल्प दिखाई दे रहे हैं।")
-
+    
     st.subheader("📸 1. नोज़ल रीडिंग पर्चियाँ अपलोड करें")
     col1, col2 = st.columns(2)
     with col1:
-        p1 = st.file_uploader("🌅 सुबह की नोज़ल रीडिंग पर्ची (Opening)", type=["jpg", "png", "jpeg"], key="m_p")
+        p1 = st.file_uploader("🌅 सुबह की नोज़ल रीडिंग पर्ची (Opening)", type=["jpg", "png", "jpeg"], key="p1")
     with col2:
-        p2 = st.file_uploader("🌃 शाम की नोज़ल रीडिंग पर्ची (Closing)", type=["jpg", "png", "jpeg"], key="e_p")
+        p2 = st.file_uploader("🌃 शाम की नोज़ल रीडिंग पर्ची (Closing)", type=["jpg", "png", "jpeg"], key="p2")
 
     st.subheader("📜 2. दैनिक जमा-खर्च व हिसाब पर्ची (हाथ से लिखी हुई)")
-    p3 = st.file_uploader("📝 हाथ से लिखे दैनिक हिसाब/कैश रजिस्टर की फोटो", type=["jpg", "png", "jpeg"], key="h_p")
+    p3 = st.file_uploader("📝 हाथ से लिखे दैनिक हिसाब/कैश रजिस्टर की फोटो", type=["jpg", "png", "jpeg"], key="p3")
 
     if st.button("🔄 AI द्वारा पर्चियाँ पढ़ें एवं हिसाब मिलाएँ"):
         if p1 and p2 and p3:
@@ -139,7 +207,6 @@ elif st.session_state['current_page'] == 'pump':
                 st.balloons()
                 st.success("🎯 **अंतिम मिलान परिणाम: 0 (ज़ीरो अंतर - हिसाब बिल्कुल सही है!)**")
 
-            # सेव और डाउनलोड
             today_date = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
             summary_text = f"पेट्रोल पंप रिपोर्ट - {today_date}\nकुल बिक्री: ₹1,18,600\nअंतर: 0"
             
@@ -148,7 +215,7 @@ elif st.session_state['current_page'] == 'pump':
                 st.download_button("📥 रिपोर्ट डाउनलोड करें", data=summary_text, file_name="Report.txt")
             with col_b2:
                 if st.button("💾 डेटाबेस में सेव करें"):
-                    st.toast("✅ सेव हो गया!", icon="💾")
+                    st.toast("✅ रिकॉर्ड सेव हो गया!", icon="💾")
         else:
             st.error("⚠️ कृपया तीनों पर्चियाँ अपलोड करें!")
 
@@ -157,9 +224,10 @@ elif st.session_state['current_page'] == 'pump':
 # ==========================================
 else:
     if st.button("⬅️ मुख्य पेज पर वापस जाएँ (Back to Home)"):
-        st.session_state['current_page'] = 'home'
+        st.query_params.clear()
         st.rerun()
 
     st.markdown("---")
     st.title("🚧 जल्द ही उपलब्ध होगा")
-    st.write("इस सेवा का फॉर्म अभी तैयार किया जा रहा है।")
+    st.write("इस सेवा का फॉर्म तैयार किया जा रहा है।")
+    
