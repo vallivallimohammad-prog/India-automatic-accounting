@@ -2,8 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import datetime
 
-# स्क्रीन कॉन्फ़िगरेशन
-st.set_page_config(page_title="ई-लेखा पोर्टल", layout="wide")
+st.set_page_config(page_title="ई-लेखा पोर्टल", layout="centered")
 
 # Session State से पेज प्रबंधन
 if 'current_page' not in st.session_state:
@@ -14,44 +13,47 @@ if 'current_page' not in st.session_state:
 # ==========================================
 if st.session_state['current_page'] == 'home':
 
-    # स्क्रीन में पूरा फ़िट करने के लिए CSS फ़िक्स
+    # मोबाइल स्क्रीन में 100% फिट करने के लिए CSS
     st.markdown("""
     <style>
-        /* मुख्य कंटेनर की चौड़ाई और पैडिंग फ़िक्स */
+        /* मुख्य पेज की पैडिंग खत्म करना ताकि स्क्रीन में सब आ जाए */
         .main .block-container {
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
+            padding-left: 0.2rem !important;
+            padding-right: 0.2rem !important;
+            padding-top: 0.5rem !important;
             max-width: 100% !important;
         }
 
         /* 1. सबसे ऊपर सरकारी हेडर पट्टी */
         .gov-header {
-            background-color: #0b1f3a; color: white; padding: 8px 10px;
+            background-color: #0b1f3a; color: white; padding: 6px 8px;
             border-radius: 4px; display: flex; justify-content: space-between;
             align-items: center; border-bottom: 2px solid #ff9933; margin-bottom: 8px;
         }
-        .gov-header-title { font-size: 12px; font-weight: bold; }
-        .gov-header-sub { font-size: 10px; opacity: 0.9; }
+        .gov-header-title { font-size: 11px; font-weight: bold; }
+        .gov-header-sub { font-size: 9px; opacity: 0.9; }
 
         /* 2. चेतावनी बोर्ड */
         .disclaimer-box {
-            background-color: #fff5f5; border-left: 4px solid #d9534f;
-            border: 1px solid #f5c6cb; padding: 8px; border-radius: 4px;
+            background-color: #fff5f5; border-left: 3px solid #d9534f;
+            border: 1px solid #f5c6cb; padding: 6px; border-radius: 4px;
             margin-bottom: 10px;
         }
-        .disclaimer-title { color: #a94442; font-weight: bold; font-size: 11.5px; margin-bottom: 2px; }
-        .disclaimer-text { color: #721c24; font-size: 10px; line-height: 1.3; }
+        .disclaimer-title { color: #a94442; font-weight: bold; font-size: 10.5px; margin-bottom: 2px; }
+        .disclaimer-text { color: #721c24; font-size: 9.5px; line-height: 1.25; }
 
-        /* 3. बाईं तरफ की नीली बटन पट्टी */
+        /* 3. बाईं तरफ की नीली बारीक बटन पट्टी */
         .sidebar-title {
             background-color: #004080;
             color: white;
-            padding: 5px;
-            font-size: 10px;
+            padding: 4px;
+            font-size: 9.5px;
             font-weight: bold;
             text-align: center;
             border-radius: 3px 3px 0 0;
         }
+        
+        /* बारीक अक्षरों वाले असली बटन */
         div.stButton > button {
             width: 100% !important;
             background-color: #0059b3 !important;
@@ -60,19 +62,19 @@ if st.session_state['current_page'] == 'home':
             border: none !important;
             border-bottom: 1px solid #004080 !important;
             border-radius: 0px !important;
-            padding: 6px 2px !important;
+            padding: 5px 3px !important;
             text-align: left !important;
-            font-size: 9.5px !important;
-            white-space: normal !important;
-            word-wrap: break-word !important;
-            line-height: 1.2 !important;
+            font-size: 9px !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
         }
         div.stButton > button:hover {
             background-color: #004080 !important;
             color: #ffcc00 !important;
         }
 
-        /* मोबाइल स्क्रीन पर दोनों कॉलम को 50-50 चौड़ाई में बिना बाहर निकले फ़िट करना */
+        /* जबरदस्ती मोबाइल में भी दो कॉलम को 50%-50% आमने-सामने रखना */
         [data-testid="stHorizontalBlock"] {
             display: flex !important;
             flex-direction: row !important;
@@ -81,18 +83,18 @@ if st.session_state['current_page'] == 'home':
             width: 100% !important;
         }
         [data-testid="column"] {
-            width: 50% !important;
-            flex: 1 1 50% !important;
+            width: 49% !important;
+            flex: 1 1 49% !important;
             min-width: 0 !important;
         }
 
         /* 4. सबसे नीचे वाला बैनर बॉक्स */
         .banner-box {
             background-color: #1a2b40; color: white; text-align: center;
-            padding: 10px; border-radius: 4px; margin-top: 10px; margin-bottom: 8px;
+            padding: 8px; border-radius: 4px; margin-top: 10px; margin-bottom: 8px;
         }
-        .banner-title { font-size: 14px; font-weight: bold; margin-bottom: 2px; }
-        .banner-subtitle { font-size: 9.5px; color: #b0c4de; }
+        .banner-title { font-size: 13px; font-weight: bold; margin-bottom: 2px; }
+        .banner-subtitle { font-size: 8.5px; color: #b0c4de; }
     </style>
 
     <!-- 1. हेडर पट्टी -->
@@ -114,7 +116,7 @@ if st.session_state['current_page'] == 'home':
     col_left, col_right = st.columns(2)
 
     # ----------------------------------------------------
-    # बाईं तरफ (Left Side): असली वर्किंग बटन
+    # बाईं तरफ (Left Side): बारीक साइज वाले असली वर्किंग बटन
     # ----------------------------------------------------
     with col_left:
         st.markdown('<div class="sidebar-title">📁 मुख्य सेवाएँ (Quick Links)</div>', unsafe_allow_html=True)
@@ -140,7 +142,7 @@ if st.session_state['current_page'] == 'home':
             st.rerun()
 
     # ----------------------------------------------------
-    # दाहिनी तरफ (Right Side): स्क्रॉल डिब्बा (Screen Fitted)
+    # दाहिनी तरफ (Right Side): संकरा व ऊँचा स्क्रॉल डिब्बा (100% Screen Fitted)
     # ----------------------------------------------------
     with col_right:
         news_box_html = """
@@ -151,21 +153,21 @@ if st.session_state['current_page'] == 'home':
                 padding: 2px; 
                 border-radius: 3px; 
                 font-family: Arial, sans-serif;
-                box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+                box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
             }
             .news-header { 
                 background-color: #800000; 
                 color: white; 
                 text-align: center; 
                 font-weight: bold; 
-                padding: 3px; 
-                font-size: 10px;
+                padding: 2.5px; 
+                font-size: 9.5px;
                 letter-spacing: 0.5px;
             }
             .news-item { 
-                padding: 4px 2px; 
+                padding: 3px 2px; 
                 border-bottom: 1px dashed #b8860b; 
-                font-size: 9px; 
+                font-size: 8.5px; 
                 font-weight: bold; 
                 display: flex; 
                 justify-content: space-between; 
@@ -181,9 +183,9 @@ if st.session_state['current_page'] == 'home':
                 background-color: #0d6efd; 
                 color: white; 
                 font-weight: bold; 
-                font-size: 8px; 
-                width: 13px;
-                height: 13px;
+                font-size: 7.5px; 
+                width: 12px;
+                height: 12px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -203,7 +205,7 @@ if st.session_state['current_page'] == 'home':
 
         <div class="news-container">
             <div class="news-header">NEWS UPDATE</div>
-            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="155px">
+            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="170px">
                 
                 <div class="news-item">
                     <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा व नोज़ल रीडिंग</div>
@@ -233,7 +235,7 @@ if st.session_state['current_page'] == 'home':
             </marquee>
         </div>
         """
-        components.html(news_box_html, height=175)
+        components.html(news_box_html, height=185)
 
     # 4. सबसे नीचे वाला मुख्य बैनर
     st.markdown("""
@@ -309,4 +311,4 @@ else:
     st.markdown("---")
     st.title("🚧 जल्द ही उपलब्ध होगा")
     st.write("इस सेवा का फॉर्म तैयार किया जा रहा है।")
-            
+        
