@@ -55,7 +55,7 @@ if current_page == "home":
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. ऑटो-स्क्रॉलिंग बॉक्स (टच सिलेक्शन सेफ कोड)
+    # 2. शुरुआत में बटन और अंत में घूमते V आइकॉन वाला स्क्रॉलिंग बॉक्स
     news_box_html = """
     <style>
         .news-container { 
@@ -65,10 +65,7 @@ if current_page == "home":
             border-radius: 6px; 
             font-family: Arial, sans-serif;
             box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
-            /* टेक्स्ट सिलेक्शन रोकने के लिए कोड (ताकि गूगल सर्च विजेट न खुले) */
             -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
         }
         .news-header { 
@@ -81,26 +78,43 @@ if current_page == "home":
             letter-spacing: 1px;
         }
         .news-item { 
-            padding: 10px 8px; 
+            padding: 10px 6px; 
             border-bottom: 1px dashed #b8860b; 
-            font-size: 13.5px; 
+            font-size: 13px; 
             font-weight: bold; 
             display: flex; 
             justify-content: space-between; 
-            align-items: flex-end;
-            text-decoration: none;
+            align-items: center;
             color: #000080;
+        }
+        
+        /* शुरुआत का टच बटन */
+        .touch-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 9px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
+            margin-right: 8px;
+            flex-shrink: 0;
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: inline-block;
         }
-        .news-item:active {
-            background-color: #f0e68c;
+        .touch-btn:active {
+            background-color: #1e7e34;
         }
+
         .news-text {
             flex: 1;
-            padding-right: 8px;
-            line-height: 1.4;
+            padding-right: 6px;
+            line-height: 1.3;
         }
+
+        /* अंत में बाएँ से दाएँ घूमता हुआ V आइकॉन */
         .v-icon-box { 
             background-color: #0d6efd; 
             color: white; 
@@ -113,11 +127,9 @@ if current_page == "home":
             justify-content: center;
             border-radius: 4px; 
             flex-shrink: 0;
-            margin-bottom: 2px;
             perspective: 1000px;
         }
 
-        /* बाएँ से दाएँ घूमता हुआ V आइकॉन */
         .spinning-v {
             display: inline-block;
             animation: rotateY 2.5s infinite linear;
@@ -133,30 +145,35 @@ if current_page == "home":
         <div class="news-header">NEWS UPDATE</div>
         <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="250px">
             
-            <a class="news-item" href="?page=pump" target="_parent">
+            <div class="news-item">
+                <a class="touch-btn" href="?page=pump" target="_parent">खोलें ➔</a>
                 <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान</div>
                 <div class="v-icon-box"><span class="spinning-v">V</span></div>
-            </a>
+            </div>
             
-            <a class="news-item" href="?page=kirana" target="_parent">
+            <div class="news-item">
+                <a class="touch-btn" href="?page=kirana" target="_parent">खोलें ➔</a>
                 <div class="news-text">🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता</div>
                 <div class="v-icon-box"><span class="spinning-v">V</span></div>
-            </a>
+            </div>
             
-            <a class="news-item" href="?page=sabzi" target="_parent">
+            <div class="news-item">
+                <a class="touch-btn" href="?page=sabzi" target="_parent">खोलें ➔</a>
                 <div class="news-text">🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर</div>
                 <div class="v-icon-box"><span class="spinning-v">V</span></div>
-            </a>
+            </div>
 
-            <a class="news-item" href="?page=hardware" target="_parent">
+            <div class="news-item">
+                <a class="touch-btn" href="?page=hardware" target="_parent">खोलें ➔</a>
                 <div class="news-text">🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर</div>
                 <div class="v-icon-box"><span class="spinning-v">V</span></div>
-            </a>
+            </div>
 
-            <a class="news-item" href="?page=mobile" target="_parent">
+            <div class="news-item">
+                <a class="touch-btn" href="?page=mobile" target="_parent">खोलें ➔</a>
                 <div class="news-text">📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता</div>
                 <div class="v-icon-box"><span class="spinning-v">V</span></div>
-            </a>
+            </div>
 
         </marquee>
     </div>
@@ -165,7 +182,7 @@ if current_page == "home":
     components.html(news_box_html, height=310)
 
 # ==========================================
-# 2. पेट्रोल पंप का पूरा नया पेज (PUMP PAGE)
+# 2. पेट्रोल पंप का नया पेज (PUMP PAGE)
 # ==========================================
 elif current_page == "pump":
 
@@ -230,4 +247,4 @@ else:
     st.markdown("---")
     st.title("🚧 जल्द ही उपलब्ध होगा")
     st.write("इस सेवा का फॉर्म तैयार किया जा रहा है।")
-    
+            
