@@ -4,7 +4,7 @@ import datetime
 
 st.set_page_config(page_title="ई-लेखा पोर्टल", layout="wide")
 
-# Session State से पेज मैनेजमेंट
+# Session State से पेज प्रबंधन
 if 'current_page' not in st.session_state:
     st.session_state['current_page'] = 'home'
 
@@ -13,7 +13,7 @@ if 'current_page' not in st.session_state:
 # ==========================================
 if st.session_state['current_page'] == 'home':
 
-    # CSS स्टाइलिंग
+    # CSS स्टाइलिंग (मोबाइल में भी Side-by-Side रखने के लिए)
     st.markdown("""
     <style>
         /* 1. सबसे ऊपर सरकारी हेडर पट्टी */
@@ -22,8 +22,8 @@ if st.session_state['current_page'] == 'home':
             border-radius: 4px; display: flex; justify-content: space-between;
             align-items: center; border-bottom: 3px solid #ff9933; margin-bottom: 12px;
         }
-        .gov-header-title { font-size: 15px; font-weight: bold; }
-        .gov-header-sub { font-size: 12px; opacity: 0.9; }
+        .gov-header-title { font-size: 14px; font-weight: bold; }
+        .gov-header-sub { font-size: 11px; opacity: 0.9; }
 
         /* 2. चेतावनी बोर्ड */
         .disclaimer-box {
@@ -31,15 +31,15 @@ if st.session_state['current_page'] == 'home':
             border: 1px solid #f5c6cb; padding: 10px 12px; border-radius: 4px;
             margin-bottom: 15px;
         }
-        .disclaimer-title { color: #a94442; font-weight: bold; font-size: 13.5px; margin-bottom: 4px; }
-        .disclaimer-text { color: #721c24; font-size: 12px; line-height: 1.4; }
+        .disclaimer-title { color: #a94442; font-weight: bold; font-size: 13px; margin-bottom: 4px; }
+        .disclaimer-text { color: #721c24; font-size: 11.5px; line-height: 1.4; }
 
-        /* 3. बाईं तरफ की नीली छोटे बटनों की पट्टी */
+        /* 3. बाईं तरफ की नीली बटन पट्टी */
         .sidebar-title {
             background-color: #004080;
             color: white;
             padding: 6px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             text-align: center;
             border-radius: 4px 4px 0 0;
@@ -52,22 +52,38 @@ if st.session_state['current_page'] == 'home':
             border: none !important;
             border-bottom: 1px solid #004080 !important;
             border-radius: 0px !important;
-            padding: 7px 8px !important;
+            padding: 8px 4px !important;
             text-align: left !important;
-            font-size: 11.5px !important;
+            font-size: 10.5px !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
         }
         div.stButton > button:hover {
             background-color: #004080 !important;
             color: #ffcc00 !important;
         }
 
-        /* 4. सबसे नीचे वाला बैनर बॉक्स */
+        /* 4. मोबाइल में जबरदस्ती दो कॉलम को आमने-सामने (Left-Right) रखने की स्टाइल */
+        [data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            gap: 8px !important;
+        }
+        [data-testid="column"] {
+            width: 50% !important;
+            flex: 1 1 50% !important;
+            min-width: 0 !important;
+        }
+
+        /* 5. सबसे नीचे वाला बैनर बॉक्स */
         .banner-box {
             background-color: #1a2b40; color: white; text-align: center;
             padding: 12px; border-radius: 6px; margin-top: 15px; margin-bottom: 10px;
         }
-        .banner-title { font-size: 17px; font-weight: bold; margin-bottom: 4px; }
-        .banner-subtitle { font-size: 11.5px; color: #b0c4de; }
+        .banner-title { font-size: 16px; font-weight: bold; margin-bottom: 4px; }
+        .banner-subtitle { font-size: 11px; color: #b0c4de; }
     </style>
 
     <!-- 1. सबसे ऊपर सरकारी हेडर पट्टी -->
@@ -76,7 +92,7 @@ if st.session_state['current_page'] == 'home':
         <div class="gov-header-sub">भारत सरकार / राज्य डिजिटल सेवा</div>
     </div>
 
-    <!-- 2. हेडर के तुरंत नीचे चेतावनी बोर्ड -->
+    <!-- 2. सुरक्षा चेतावनी बोर्ड -->
     <div class="disclaimer-box">
         <div class="disclaimer-title">⚠️ आवश्यक सूचना एवं कानूनी अस्वीकरण (Disclaimer):</div>
         <div class="disclaimer-text">
@@ -85,37 +101,37 @@ if st.session_state['current_page'] == 'home':
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. आमने-सामने दो हिस्से (Left Buttons & Right Scroll Box)
-    col_left, col_right = st.columns([1, 1])
+    # 3. आमने-सामने दो हिस्से (Left Side Buttons & Right Side Scroll Box)
+    col_left, col_right = st.columns(2)
 
     # ----------------------------------------------------
-    # बाईं तरफ (Left Side): छोटे असली वर्किंग बटन
+    # बाईं तरफ (Left Side): असली बटन
     # ----------------------------------------------------
     with col_left:
         st.markdown('<div class="sidebar-title">📁 मुख्य सेवाएँ (Quick Links)</div>', unsafe_allow_html=True)
         
-        if st.button("⛽ 1. पेट्रोल पंप नोज़ल मिलान ➔"):
+        if st.button("⛽ 1. पेट्रोल पंप नोज़ल ➔"):
             st.session_state['current_page'] = 'pump'
             st.rerun()
 
-        if st.button("🛒 2. किराना एवं जनरल स्टोर ➔"):
+        if st.button("🛒 2. किराना एवं जनरल ➔"):
             st.session_state['current_page'] = 'kirana'
             st.rerun()
 
-        if st.button("🥦 3. सब्जी व फल मंडी रजिस्टर ➔"):
+        if st.button("🥦 3. सब्जी व फल मंडी ➔"):
             st.session_state['current_page'] = 'sabzi'
             st.rerun()
 
-        if st.button("🔩 4. हार्डवेयर व लोहा ट्रेडर्स ➔"):
+        if st.button("🔩 4. हार्डवेयर व लोहा ➔"):
             st.session_state['current_page'] = 'hardware'
             st.rerun()
 
-        if st.button("📱 5. मोबाइल व इलेक्ट्रॉनिक्स ➔"):
+        if st.button("📱 5. मोबाइल-इलेक्ट्रॉनिक्स ➔"):
             st.session_state['current_page'] = 'mobile'
             st.rerun()
 
     # ----------------------------------------------------
-    # दाहिनी तरफ (Right Side): ऑटो-स्क्रॉलिंग डिब्बा
+    # दाहिनी तरफ (Right Side): स्क्रॉल डिब्बा
     # ----------------------------------------------------
     with col_right:
         news_box_html = """
@@ -123,24 +139,24 @@ if st.session_state['current_page'] == 'home':
             .news-container { 
                 border: 2px solid #800000; 
                 background-color: #fff8dc; 
-                padding: 4px; 
+                padding: 3px; 
                 border-radius: 4px; 
                 font-family: Arial, sans-serif;
-                box-shadow: 2px 2px 6px rgba(0,0,0,0.12);
+                box-shadow: 1px 1px 5px rgba(0,0,0,0.12);
             }
             .news-header { 
                 background-color: #800000; 
                 color: white; 
                 text-align: center; 
                 font-weight: bold; 
-                padding: 5px; 
-                font-size: 12px;
-                letter-spacing: 1px;
+                padding: 4px; 
+                font-size: 11px;
+                letter-spacing: 0.5px;
             }
             .news-item { 
-                padding: 6px 4px; 
+                padding: 5px 3px; 
                 border-bottom: 1px dashed #b8860b; 
-                font-size: 11px; 
+                font-size: 10px; 
                 font-weight: bold; 
                 display: flex; 
                 justify-content: space-between; 
@@ -149,20 +165,20 @@ if st.session_state['current_page'] == 'home':
             }
             .news-text {
                 flex: 1;
-                padding-right: 4px;
-                line-height: 1.3;
+                padding-right: 3px;
+                line-height: 1.2;
             }
             .v-icon-box { 
                 background-color: #0d6efd; 
                 color: white; 
                 font-weight: bold; 
-                font-size: 10px; 
-                width: 17px;
-                height: 17px;
+                font-size: 9px; 
+                width: 15px;
+                height: 15px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                border-radius: 3px; 
+                border-radius: 2px; 
                 flex-shrink: 0;
                 perspective: 1000px;
             }
@@ -178,7 +194,7 @@ if st.session_state['current_page'] == 'home':
 
         <div class="news-container">
             <div class="news-header">NEWS UPDATE</div>
-            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="195px">
+            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="180px">
                 
                 <div class="news-item">
                     <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान</div>
@@ -208,9 +224,9 @@ if st.session_state['current_page'] == 'home':
             </marquee>
         </div>
         """
-        components.html(news_box_html, height=230)
+        components.html(news_box_html, height=210)
 
-    # 4. इन दोनों (बटन व स्क्रॉल बॉक्स) के ठीक नीचे सबसे नीचे वाला मुख्य बैनर
+    # 4. इन दोनों के ठीक नीचे सबसे नीचे वाला मुख्य बैनर
     st.markdown("""
     <div class="banner-box">
         <div class="banner-title">स्वचालित खाता मिलान प्रणाली</div>
@@ -284,4 +300,4 @@ else:
     st.markdown("---")
     st.title("🚧 जल्द ही उपलब्ध होगा")
     st.write("इस सेवा का फॉर्म तैयार किया जा रहा है।")
-        
+            
