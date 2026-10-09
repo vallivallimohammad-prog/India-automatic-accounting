@@ -1,9 +1,10 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import datetime
 
 st.set_page_config(page_title="ई-लेखा पोर्टल", layout="centered")
 
-# URL पैरामीटर से चेक करेंगे कि कौन सा पेज खोलना है
+# URL पैरामीटर से जांच करेंगे कि कौन सा पेज खोलना है
 query_params = st.query_params
 current_page = query_params.get("page", "home")
 
@@ -54,7 +55,7 @@ if current_page == "home":
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. राजस्थान बोर्ड जैसा एक सिंगल ऑटो-स्क्रॉलिंग बॉक्स
+    # 2. ऑटो-स्क्रॉलिंग बॉक्स (टच सिलेक्शन सेफ कोड)
     news_box_html = """
     <style>
         .news-container { 
@@ -64,6 +65,11 @@ if current_page == "home":
             border-radius: 6px; 
             font-family: Arial, sans-serif;
             box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+            /* टेक्स्ट सिलेक्शन रोकने के लिए कोड (ताकि गूगल सर्च विजेट न खुले) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         .news-header { 
             background-color: #800000; 
@@ -85,8 +91,9 @@ if current_page == "home":
             text-decoration: none;
             color: #000080;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
-        .news-item:hover {
+        .news-item:active {
             background-color: #f0e68c;
         }
         .news-text {
@@ -110,7 +117,7 @@ if current_page == "home":
             perspective: 1000px;
         }
 
-        /* 3D Left to Right Rotating V Animation */
+        /* बाएँ से दाएँ घूमता हुआ V आइकॉन */
         .spinning-v {
             display: inline-block;
             animation: rotateY 2.5s infinite linear;
@@ -126,42 +133,35 @@ if current_page == "home":
         <div class="news-header">NEWS UPDATE</div>
         <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="250px">
             
-            <a class="news-item" onclick="openPage('pump')">
+            <a class="news-item" href="?page=pump" target="_parent">
                 <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान</div>
                 <div class="v-icon-box"><span class="spinning-v">V</span></div>
             </a>
             
-            <a class="news-item" onclick="openPage('kirana')">
+            <a class="news-item" href="?page=kirana" target="_parent">
                 <div class="news-text">🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता</div>
                 <div class="v-icon-box"><span class="spinning-v">V</span></div>
             </a>
             
-            <a class="news-item" onclick="openPage('sabzi')">
+            <a class="news-item" href="?page=sabzi" target="_parent">
                 <div class="news-text">🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर</div>
                 <div class="v-icon-box"><span class="spinning-v">V</span></div>
             </a>
 
-            <a class="news-item" onclick="openPage('hardware')">
+            <a class="news-item" href="?page=hardware" target="_parent">
                 <div class="news-text">🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर</div>
                 <div class="v-icon-box"><span class="spinning-v">V</span></div>
             </a>
 
-            <a class="news-item" onclick="openPage('mobile')">
+            <a class="news-item" href="?page=mobile" target="_parent">
                 <div class="news-text">📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता</div>
                 <div class="v-icon-box"><span class="spinning-v">V</span></div>
             </a>
 
         </marquee>
     </div>
-
-    <script>
-        function openPage(pageName) {
-            window.top.location.href = window.top.location.pathname + "?page=" + pageName;
-        }
-    </script>
     """
 
-    import streamlit.components.v1 as components
     components.html(news_box_html, height=310)
 
 # ==========================================
