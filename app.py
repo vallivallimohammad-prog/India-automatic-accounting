@@ -5,7 +5,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="ई-लेखा पोर्टल", layout="centered")
 
-# 1. हेडर, बैनर और डिस्क्लेमर
+# 1. ऊपर का सरकारी स्टाइल हेडर, बैनर और अस्वीकरण (Disclaimer)
 st.markdown("""
 <style>
     .gov-header {
@@ -51,39 +51,124 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 2. ऑटो-स्क्रॉलिंग न्यूज़ बॉक्स
+# 2. ऑटो-स्क्रॉलिंग न्यूज़ अपडेट वाला बॉक्स (घूमता हुआ V और सही पोजीशन)
 news_box_html = """
 <style>
-    .news-container { border: 2px solid #800000; background-color: #fff8dc; padding: 5px; border-radius: 6px; }
-    .news-header { background-color: #800000; color: white; text-align: center; font-weight: bold; padding: 6px; }
-    .news-item { padding: 10px 8px; border-bottom: 1px dashed #b8860b; font-size: 13.5px; font-weight: bold; color: #000080; display: flex; justify-content: space-between; }
-    .v-icon { background-color: #0d6efd; color: white; padding: 2px 7px; border-radius: 3px; font-size: 11px; }
+    .news-container { 
+        border: 2px solid #800000; 
+        background-color: #fff8dc; 
+        padding: 5px; 
+        border-radius: 6px; 
+        font-family: Arial, sans-serif;
+    }
+    .news-header { 
+        background-color: #800000; 
+        color: white; 
+        text-align: center; 
+        font-weight: bold; 
+        padding: 6px; 
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+    
+    /* हर आइटम का लेआउट - फ्लेक्स अलाइनमेंट बॉटम पर सेट */
+    .news-item { 
+        padding: 10px 8px; 
+        border-bottom: 1px dashed #b8860b; 
+        font-size: 13.5px; 
+        font-weight: bold; 
+        color: #000080; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: flex-end; /* V आइकॉन को हमेशा सबसे निचले सिरे पर रखने के लिए */
+    }
+    
+    .news-text {
+        flex: 1;
+        padding-right: 8px;
+        line-height: 1.4;
+    }
+
+    /* घूमता हुआ V आइकॉन बॉक्स */
+    .v-icon-box { 
+        background-color: #0d6efd; 
+        color: white; 
+        font-weight: bold; 
+        font-size: 11px; 
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px; 
+        flex-shrink: 0;
+        margin-bottom: 2px; /* लाइन के सबसे नीचे स्थिर रहने के लिए */
+    }
+
+    /* V को घुमाने का एनिमेशन (Spinning Animation) */
+    .spinning-v {
+        display: inline-block;
+        animation: spin 3s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
+
 <div class="news-container">
     <div class="news-header">NEWS UPDATE</div>
-    <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="150px">
-        <div class="news-item"><span>⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान</span><span class="v-icon">V</span></div>
-        <div class="news-item"><span>🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता</span><span class="v-icon">V</span></div>
-        <div class="news-item"><span>🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर</span><span class="v-icon">V</span></div>
+    <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="230px">
+        
+        <div class="news-item">
+            <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान</div>
+            <div class="v-icon-box"><span class="spinning-v">V</span></div>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-text">🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता</div>
+            <div class="v-icon-box"><span class="spinning-v">V</span></div>
+        </div>
+        
+        <div class="news-item">
+            <div class="news-text">🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर</div>
+            <div class="v-icon-box"><span class="spinning-v">V</span></div>
+        </div>
+
+        <div class="news-item">
+            <div class="news-text">🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर</div>
+            <div class="v-icon-box"><span class="spinning-v">V</span></div>
+        </div>
+
+        <div class="news-item">
+            <div class="news-text">📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता</div>
+            <div class="v-icon-box"><span class="spinning-v">V</span></div>
+        </div>
+
     </marquee>
 </div>
 """
-components.html(news_box_html, height=200)
+
+components.html(news_box_html, height=280)
 
 st.markdown("---")
 
-# 3. ड्रॉपडाउन से सेलेक्ट करना
+# 3. सभी 5 सेवाओं का ड्रॉपडाउन विकल्प
 selected_option = st.selectbox(
     "👇 आगे बढ़ने के लिए कृपया अपनी सेवा चुनें:",
     [
         "-- सेवा चुनें --",
-        "⛽ पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान",
-        "🛒 किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता"
+        "⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान",
+        "🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री व बही-खाता",
+        "🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार रजिस्टर",
+        "🔩 4. हार्डवेयर, लोहा एवं स्टील ट्रेडर्स लेजर",
+        "📱 5. मोबाइल, इलेक्ट्रॉनिक्स एवं सॉफ्टवेयर शॉप खाता"
     ]
 )
 
-# 4. पेट्रोल पंप वाला फॉर्म
-if selected_option == "⛽ पेट्रोल पंप दैनिक लेखा-जोखा एवं नोज़ल रीडिंग मिलान":
+# 4. पेट्रोल पंप चुनने पर प्रोसेसिंग फॉर्म
+if "1. पेट्रोल पंप" in selected_option:
     st.subheader("⛽ पेट्रोल पंप नोज़ल एवं जमा-खर्च मिलान फॉर्म")
     
     st.markdown('<div class="pump-card">', unsafe_allow_html=True)
@@ -99,7 +184,6 @@ if selected_option == "⛽ पेट्रोल पंप दैनिक ल�
     p3 = st.file_uploader("📝 हाथ से लिखे दैनिक हिसाब/कैश रजिस्टर की फोटो", type=["jpg", "png", "jpeg"], key="handwritten")
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # हिसाब मिलाएँ बटन
     if st.button("🔄 AI द्वारा पर्चियाँ पढ़ें एवं हिसाब मिलाएँ"):
         if p1 and p2 and p3:
             st.info("🔍 सिस्टम पर्चियों को स्कैन करके रीडिंग पहचान रहा है...")
@@ -107,7 +191,6 @@ if selected_option == "⛽ पेट्रोल पंप दैनिक ल�
             
             st.markdown("### 📊 AI द्वारा निकाला गया ऑटोमैटिक विवरण:")
             
-            # डेटा की सरणी
             report_data = [
                 {"इंधन प्रकार": "MS (पेट्रोल)", "नोज़ल": "Nozzle 1", "सुबह रीडिंग": "12450.00", "शाम रीडिंग": "12850.00", "बिक्री (लीटर)": "400 Ltr", "दर": "₹108.50", "कुल रुपये": "₹43,400"},
                 {"इंधन प्रकार": "HSD (डीजल)", "नोज़ल": "Nozzle 2", "सुबह रीडिंग": "50200.00", "शाम रीडिंग": "51000.00", "बिक्री (लीटर)": "800 Ltr", "दर": "₹94.00", "कुल रुपये": "₹75,200"}
@@ -130,13 +213,10 @@ if selected_option == "⛽ पेट्रोल पंप दैनिक ल�
             else:
                 st.error(f"📉 **अंतिम मिलान परिणाम: -₹{abs(difference)} (माइनस में - पैसे कम हैं)**")
 
-            # ----------------------------------------------------
             # 5. सेव और डाउनलोड करने का सेक्शन
-            # ----------------------------------------------------
             st.markdown("---")
             st.subheader("💾 हिसाब-किताब सेव एवं डाउनलोड करें")
             
-            # डाउनलोड रिपोर्ट का टेक्स्ट बनाना
             today_date = datetime.now().strftime("%d-%m-%Y %H:%M")
             summary_text = f"""=== राष्ट्रीय ई-लेखा एवं बही-खाता रिपोर्ट ===
 दिनांक एवं समय: {today_date}
@@ -158,7 +238,6 @@ if selected_option == "⛽ पेट्रोल पंप दैनिक ल�
             col_btn1, col_btn2 = st.columns(2)
             
             with col_btn1:
-                # 1. डाउनलोड बटन (टेक्स्ट/सामरी फ़ाइल)
                 st.download_button(
                     label="📥 हिसाब की रिपोर्ट डाउनलोड करें (Text/PDF File)",
                     data=summary_text,
@@ -167,10 +246,12 @@ if selected_option == "⛽ पेट्रोल पंप दैनिक ल�
                 )
                 
             with col_btn2:
-                # 2. डेटाबेस / रिकॉर्ड में सेव करने का बटन
                 if st.button("💾 सिस्टम/डेटाबेस में सेव करें"):
                     st.toast("✅ हिसाब रिकॉर्ड सफलतापूर्वक डेटाबेस में सेव कर दिया गया है!", icon="💾")
 
         else:
             st.error("⚠️ कृपया तीनों पर्चियों की फोटो अपलोड करें!")
-        
+
+elif selected_option != "-- सेवा चुनें --":
+    st.info(f"आपने **{selected_option}** विकल्प चुना है। इसका फॉर्म नीचे जल्द ही लोड होगा।")
+    
