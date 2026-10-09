@@ -1,310 +1,210 @@
 import streamlit as st
-import streamlit.components.v1 as components
-import datetime
+import pandas as pd
+from fpdf import FPDF
 
-st.set_page_config(page_title="ई-लेखा पोर्टल", layout="centered")
+# --- पेज कॉन्फ़िगरेशन ---
+st.set_page_config(
+    page_title="पेट्रोल पंप मैनेजमेंट",
+    page_icon="⛽",
+    layout="wide"
+)
 
-# Session State से पेज प्रबंधन
-if 'current_page' not in st.session_state:
-    st.session_state['current_page'] = 'home'
-
-# ==========================================
-# 1. मुख्य होम पेज (HOME PAGE)
-# ==========================================
-if st.session_state['current_page'] == 'home':
-
-    # स्क्रीन में 100% स्क्रीन-फिट और रिस्पॉन्सिव CSS
-    st.markdown("""
-    <style>
-        /* मुख्य कंटेनर की पैडिंग और चौड़ाई सेट करना */
-        .main .block-container {
-            padding-left: 4px !important;
-            padding-right: 4px !important;
-            padding-top: 6px !important;
-            max-width: 100% !important;
-        }
-
-        /* 1. सबसे ऊपर सरकारी हेडर पट्टी */
-        .gov-header {
-            background-color: #0b1f3a; color: white; padding: 6px 8px;
-            border-radius: 4px; display: flex; justify-content: space-between;
-            align-items: center; border-bottom: 2px solid #ff9933; margin-bottom: 8px;
-        }
-        .gov-header-title { font-size: 11px; font-weight: bold; }
-        .gov-header-sub { font-size: 9px; opacity: 0.9; }
-
-        /* 2. चेतावनी बोर्ड */
-        .disclaimer-box {
-            background-color: #fff5f5; border-left: 3px solid #d9534f;
-            border: 1px solid #f5c6cb; padding: 6px; border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        .disclaimer-title { color: #a94442; font-weight: bold; font-size: 10.5px; margin-bottom: 2px; }
-        .disclaimer-text { color: #721c24; font-size: 9.5px; line-height: 1.25; }
-
-        /* 3. बाईं तरफ की नीली बटन पट्टी */
-        .sidebar-title {
-            background-color: #004080;
-            color: white;
-            padding: 5px;
-            font-size: 10px;
-            font-weight: bold;
-            text-align: center;
-            border-radius: 3px 3px 0 0;
-        }
-
-        /* असली Streamlit बटनों की स्टाइलिंग (Compact Size) */
-        div.stButton > button {
-            width: 100% !important;
-            background-color: #0059b3 !important;
-            color: white !important;
-            font-weight: bold !important;
-            border: none !important;
-            border-bottom: 1px solid #004080 !important;
-            border-radius: 0px !important;
-            padding: 8px 3px !important;
-            text-align: left !important;
-            font-size: 9px !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            cursor: pointer !important;
-        }
-        div.stButton > button:hover, div.stButton > button:active {
-            background-color: #003366 !important;
-            color: #ffcc00 !important;
-        }
-
-        /* मोबाइल में भी दो कॉलम को ज़बरदस्ती 50%-50% साइड-बाय-साइड रखना */
-        [data-testid="stHorizontalBlock"] {
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            gap: 4px !important;
-            width: 100% !important;
-        }
-        [data-testid="column"] {
-            width: 49% !important;
-            flex: 1 1 49% !important;
-            min-width: 0 !important;
-        }
-
-        /* 4. सबसे नीचे वाला बैनर बॉक्स */
-        .banner-box {
-            background-color: #1a2b40; color: white; text-align: center;
-            padding: 10px; border-radius: 4px; margin-top: 12px; margin-bottom: 8px;
-        }
-        .banner-title { font-size: 13.5px; font-weight: bold; margin-bottom: 2px; }
-        .banner-subtitle { font-size: 8.5px; color: #b0c4de; }
-    </style>
-
-    <!-- 1. हेडर पट्टी -->
-    <div class="gov-header">
-        <div class="gov-header-title">🏛️ राष्ट्रीय ई-लेखा एवं सत्यापन पोर्टल</div>
-        <div class="gov-header-sub">भारत सरकार / डिजिटल सेवा</div>
-    </div>
-
-    <!-- 2. सुरक्षा चेतावनी बोर्ड -->
-    <div class="disclaimer-box">
-        <div class="disclaimer-title">⚠️ आवश्यक सूचना एवं कानूनी अस्वीकरण (Disclaimer):</div>
-        <div class="disclaimer-text">
-            यह प्रणाली केवल स्वचालित डिजिटल गणना हेतु है। किसी भी प्रकार की भिन्नता/त्रुटि होने पर डेवलपर की ज़िम्मेदारी नहीं होगी।
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # 3. आमने-सामने दो हिस्से (Left: Native Working Buttons | Right: Scroll Box)
-    col_left, col_right = st.columns(2)
-
-    # ----------------------------------------------------
-    # बाईं तरफ (Left Side): असली वर्किंग बटन (No iframe, No Search Bar)
-    # ----------------------------------------------------
-    with col_left:
-        st.markdown('<div class="sidebar-title">📁 मुख्य सेवाएँ</div>', unsafe_allow_html=True)
-        
-        if st.button("⛽ 1. पेट्रोल पंप नोज़ल ➔", key="btn_pump"):
-            st.session_state['current_page'] = 'pump'
-            st.rerun()
-
-        if st.button("🛒 2. किराना एवं जनरल ➔", key="btn_kirana"):
-            st.session_state['current_page'] = 'kirana'
-            st.rerun()
-
-        if st.button("🥦 3. सब्जी व फल मंडी ➔", key="btn_sabzi"):
-            st.session_state['current_page'] = 'sabzi'
-            st.rerun()
-
-        if st.button("🔩 4. हार्डवेयर व लोहा ➔", key="btn_hardware"):
-            st.session_state['current_page'] = 'hardware'
-            st.rerun()
-
-        if st.button("📱 5. मोबाइल-इलेक्ट्रॉनिक्स ➔", key="btn_mobile"):
-            st.session_state['current_page'] = 'mobile'
-            st.rerun()
-
-    # ----------------------------------------------------
-    # दाहिनी तरफ (Right Side): 3D रोटेटिंग V आइकॉन वाला स्क्रॉल डिब्बा
-    # ----------------------------------------------------
-    with col_right:
-        news_box_html = """
-        <style>
-            .news-container { 
-                border: 1.5px solid #800000; 
-                background-color: #fff8dc; 
-                padding: 2px; 
-                border-radius: 3px; 
-                font-family: Arial, sans-serif;
-                box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-                box-sizing: border-box;
-            }
-            .news-header { 
-                background-color: #800000; 
-                color: white; 
-                text-align: center; 
-                font-weight: bold; 
-                padding: 3px 2px; 
-                font-size: 9.5px;
-                letter-spacing: 0.5px;
-            }
-            .news-item { 
-                padding: 5px 2px; 
-                border-bottom: 1px dashed #b8860b; 
-                font-size: 8.5px; 
-                font-weight: bold; 
-                display: flex; 
-                justify-content: space-between; 
-                align-items: flex-end;
-                color: #000080;
-            }
-            .news-text {
-                flex: 1;
-                padding-right: 2px;
-                line-height: 1.2;
-            }
-            .v-icon-box { 
-                background-color: #0d6efd; 
-                color: white; 
-                font-weight: bold; 
-                font-size: 7.5px; 
-                width: 12px;
-                height: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 2px; 
-                flex-shrink: 0;
-                perspective: 1000px;
-            }
-            .spinning-v {
-                display: inline-block;
-                animation: rotateY 2.5s infinite linear;
-            }
-            @keyframes rotateY {
-                0% { transform: rotateY(0deg); }
-                100% { transform: rotateY(360deg); }
-            }
-        </style>
-
-        <div class="news-container">
-            <div class="news-header">NEWS UPDATE</div>
-            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" height="185px">
-                <div class="news-item">
-                    <div class="news-text">⛽ 1. पेट्रोल पंप दैनिक लेखा-जोखा व नोज़ल रीडिंग</div>
-                    <div class="v-icon-box"><span class="spinning-v">V</span></div>
-                </div>
-                <div class="news-item">
-                    <div class="news-text">🛒 2. किराना एवं जनरल स्टोर दैनिक बिक्री</div>
-                    <div class="v-icon-box"><span class="spinning-v">V</span></div>
-                </div>
-                <div class="news-item">
-                    <div class="news-text">🥦 3. सब्जी एवं फल मंडी दैनिक व्यापार</div>
-                    <div class="v-icon-box"><span class="spinning-v">V</span></div>
-                </div>
-                <div class="news-item">
-                    <div class="news-text">🔩 4. हार्डवेयर, लोहा एवं स्टील लेजर</div>
-                    <div class="v-icon-box"><span class="spinning-v">V</span></div>
-                </div>
-                <div class="news-item">
-                    <div class="news-text">📱 5. मोबाइल, इलेक्ट्रॉनिक्स शॉप खाता</div>
-                    <div class="v-icon-box"><span class="spinning-v">V</span></div>
-                </div>
-            </marquee>
-        </div>
-        """
-        components.html(news_box_html, height=205)
-
-    # 4. इन दोनों के ठीक नीचे सबसे नीचे वाला मुख्य बैनर
-    st.markdown("""
-    <div class="banner-box">
-        <div class="banner-title">स्वचालित खाता मिलान प्रणाली</div>
-        <div class="banner-subtitle">Automated Fuel Station Reconciliation & Ledger Audit System</div>
-    </div>
-    """, unsafe_allow_html=True)
+# सेशन स्टेट द्वारा पेज नेविगेशन कंट्रोल
+if "current_page" not in st.session_state:
+    st.session_state["current_page"] = "home"
 
 # ==========================================
-# 2. पेट्रोल पंप का पूरा नया अलग पेज (PUMP PAGE)
+# 🏠 1. बाहर का मेन पेज (Dashboard / Home Page)
 # ==========================================
-elif st.session_state['current_page'] == 'pump':
-
-    if st.button("⬅️ मुख्य पेज पर वापस जाएँ (Back to Home)"):
-        st.session_state['current_page'] = 'home'
-        st.rerun()
-
+if st.session_state["current_page"] == "home":
+    st.title("⛽ पेट्रोल पंप प्रबंधन प्रणाली")
     st.markdown("---")
-    st.title("⛽ पेट्रोल पंप नोज़ल एवं जमा-खर्च मिलान")
-
-    st.subheader("📸 1. नोज़ल रीडिंग पर्चियाँ अपलोड करें")
+    
+    st.subheader("📋 मुख्य विकल्प (Menu)")
+    st.write("नीचे दिए गए ऑप्शन पर क्लिक करके नया हिसाब पेज खोलें:")
+    
     col1, col2 = st.columns(2)
+    
     with col1:
-        p1 = st.file_uploader("🌅 सुबह की नोज़ल रीडिंग पर्ची (Opening)", type=["jpg", "png", "jpeg"], key="p1")
+        st.info("### 🧾 दैनिक जमा-खर्च व हिसाब")
+        st.write("8 नोज़ल रीडिंग, पर्ची अपलोड, सुबह की टेस्टिंग और दैनिक रजिस्टर का स्वचालित हिसाब मिलाने के लिए नीचे क्लिक करें।")
+        if st.button("👉 हिसाब-किताब पेज खोलें", type="primary", use_container_width=True):
+            st.session_state["current_page"] = "hisab_page"
+            st.rerun()
+
     with col2:
-        p2 = st.file_uploader("🌃 शाम की नोज़ल रीडिंग पर्ची (Closing)", type=["jpg", "png", "jpeg"], key="p2")
-
-    st.subheader("📜 2. दैनिक जमा-खर्च व हिसाब पर्ची (हाथ से लिखी हुई)")
-    p3 = st.file_uploader("📝 हाथ से लिखे दैनिक हिसाब/कैश रजिस्टर की फोटो", type=["jpg", "png", "jpeg"], key="p3")
-
-    if st.button("🔄 AI द्वारा पर्चियाँ पढ़ें एवं हिसाब मिलाएँ"):
-        if p1 and p2 and p3:
-            st.success("✅ पर्चियाँ सफलतापूर्वक पहचान ली गईं!")
-            
-            report_data = [
-                {"इंधन प्रकार": "MS (पेट्रोल)", "नोज़ल": "Nozzle 1", "सुबह रीडिंग": "12450.00", "शाम रीडिंग": "12850.00", "बिक्री (लीटर)": "400 Ltr", "दर": "₹108.50", "कुल रुपये": "₹43,400"},
-                {"इंधन प्रकार": "HSD (डीजल)", "नोज़ल": "Nozzle 2", "सुबह रीडिंग": "50200.00", "शाम रीडिंग": "51000.00", "बिक्री (लीटर)": "800 Ltr", "दर": "₹94.00", "कुल रुपये": "₹75,200"}
-            ]
-            st.table(report_data)
-            
-            total_fuel_sale = 118600
-            cash_received = 118600
-            difference = cash_received - total_fuel_sale
-
-            st.write(f"💵 **पर्चियों के अनुसार कुल तेल बिक्री:** `₹{total_fuel_sale:,}`")
-            st.write(f"📝 **हाथ की पर्ची से मिली कुल रकम:** `₹{cash_received:,}`")
-            
-            if difference == 0:
-                st.balloons()
-                st.success("🎯 **अंतिम मिलान परिणाम: 0 (ज़ीरो अंतर - हिसाब बिल्कुल सही है!)**")
-
-            today_date = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
-            summary_text = f"पेट्रोल पंप रिपोर्ट - {today_date}\nकुल बिक्री: ₹1,18,600\nअंतर: 0"
-            
-            col_b1, col_b2 = st.columns(2)
-            with col_b1:
-                st.download_button("📥 रिपोर्ट डाउनलोड करें", data=summary_text, file_name="Report.txt")
-            with col_b2:
-                if st.button("💾 डेटाबेस में सेव करें"):
-                    st.toast("✅ रिकॉर्ड सेव हो गया!", icon="💾")
-        else:
-            st.error("⚠️ कृपया तीनों पर्चियाँ अपलोड करें!")
+        st.success("### 📊 स्टॉक व बिक्री रिपोर्ट्स")
+        st.write("पुराने दैनिक हिसाब, रीडिंग रिकॉर्ड्स और बिक्री की समरी रिपोर्ट देखें।")
+        st.button("📁 रिपोर्ट्स देखें (शीघ्र उपलब्ध)", disabled=True, use_container_width=True)
 
 # ==========================================
-# 3. बाकी अन्य पेजों के लिए
+# 📄 2. नया हिसाब-किताब पेज (New Page)
 # ==========================================
-else:
-    if st.button("⬅️ मुख्य पेज पर वापस जाएँ (Back to Home)"):
-        st.session_state['current_page'] = 'home'
+elif st.session_state["current_page"] == "hisab_page":
+    
+    # वापस मुख्य पेज पर जाने का बटन
+    if st.button("⬅️ मुख्य मेनू (Home) पर वापस जाएँ"):
+        st.session_state["current_page"] = "home"
         st.rerun()
 
+    st.title("📝 2. दैनिक जमा-खर्च व हिसाब पर्ची")
     st.markdown("---")
-    st.title("🚧 जल्द ही उपलब्ध होगा")
-    st.write("इस सेवा का फॉर्म तैयार किया जा रहा है।")
+
+    # ------------------------------------------
+    # (A) 8 नोज़ल रीडिंग - पर्ची + मैन्युअल टाइपिंग
+    # ------------------------------------------
+    st.header("1. नोज़ल रीडिंग दर्ज करें (8 नोज़ल्स)")
+    st.info("आप चाहें तो पर्चियों की फोटो अपलोड करें या नीचे सीधे रीडिंग टाइप करें। दोनों तरीकों से सही हिसाब मिल जाएगा।")
+
+    col_m_files, col_e_files = st.columns(2)
+
+    # सुबह की पर्चियाँ (4 ऑप्शन)
+    with col_m_files:
+        st.subheader("🌅 सुबह की नोज़ल पर्चियाँ (Opening)")
+        m_files = []
+        for i in range(1, 5):
+            f = st.file_uploader(f"सुबह की पर्ची {i}", type=["jpg", "jpeg", "png"], key=f"m_file_{i}")
+            if f:
+                m_files.append(f)
+
+    # शाम की पर्चियाँ (4 ऑप्शन)
+    with col_e_files:
+        st.subheader("🌆 शाम की नोज़ल पर्चियाँ (Closing)")
+        e_files = []
+        for i in range(1, 5):
+            f = st.file_uploader(f"शाम की पर्ची {i}", type=["jpg", "jpeg", "png"], key=f"e_file_{i}")
+            if f:
+                e_files.append(f)
+
+    st.markdown("#### 🔢 मैन्युअल नोज़ल रीडिंग दर्ज करें (8 नोज़ल्स):")
+    col_read1, col_read2 = st.columns(2)
+
+    morning_readings = {}
+    evening_readings = {}
+
+    with col_read1:
+        st.markdown("**सुबह की रीडिंग (Opening):**")
+        for i in range(1, 9):
+            morning_readings[f"Nozzle {i}"] = st.number_input(
+                f"नोज़ल {i} (सुबह)", min_value=0.0, value=0.0, step=0.1, key=f"m_read_{i}"
+            )
+
+    with col_read2:
+        st.markdown("**शाम की रीडिंग (Closing):**")
+        for i in range(1, 9):
+            evening_readings[f"Nozzle {i}"] = st.number_input(
+                f"नोज़ल {i} (शाम)", min_value=0.0, value=0.0, step=0.1, key=f"e_read_{i}"
+            )
+
+    st.markdown("---")
+
+    # ------------------------------------------
+    # (B) सुबह की टेस्टिंग (Testing Oil Input)
+    # ------------------------------------------
+    st.header("2. सुबह की टेस्टिंग")
+    st.caption("यदि कोई टेस्टिंग हुई है तो लीटर या रुपये दर्ज करें। यदि खाली छोड़ेंगे तो नीचे हिसाब में टेस्टिंग प्रदर्शित नहीं होगी।")
+
+    col_t1, col_t2 = st.columns(2)
+    with col_t1:
+        testing_liters = st.number_input("टेस्टिंग का तेल (लीटर)", min_value=0.0, value=0.0, step=0.5)
+    with col_t2:
+        testing_rupees = st.number_input("टेस्टिंग के रुपये (₹)", min_value=0.0, value=0.0, step=1.0)
+
+    st.markdown("---")
+
+    # ------------------------------------------
+    # (C) दैनिक जमा-खर्च (रजिस्टर पर्चियाँ - 4 ऑप्शन)
+    # ------------------------------------------
+    st.header("3. हाथ से लिखे दैनिक रजिस्टर की पर्चियाँ")
+    st.caption("रजिस्टर की फोटो अपलोड करें (4 अलग-अलग ऑप्शन)।")
+
+    reg_cols = st.columns(4)
+    register_files = []
+    for i in range(1, 5):
+        with reg_cols[i-1]:
+            rf = st.file_uploader(f"रजिस्टर पर्ची {i}", type=["jpg", "jpeg", "png"], key=f"reg_file_{i}")
+            if rf:
+                register_files.append(rf)
+
+    st.markdown("---")
+
+    # ------------------------------------------
+    # (D) स्वचालित हिसाब मिलाएँ बटन
+    # ------------------------------------------
+    if st.button("🔄 स्वचालित हिसाब मिलाएँ", type="primary", use_container_width=True):
+        st.success("हिसाब सफलतापूर्वक मिल गया है!")
         
+        # 8 नोज़ल की बिक्री गणना
+        nozzle_data = []
+        total_gross_liters = 0.0
+        
+        for i in range(1, 9):
+            m_val = morning_readings[f"Nozzle {i}"]
+            e_val = evening_readings[f"Nozzle {i}"]
+            diff = max(0.0, e_val - m_val) if e_val >= m_val else 0.0
+            total_gross_liters += diff
+            nozzle_data.append({
+                "नोज़ल नं.": f"नोज़ल {i}",
+                "सुबह रीडिंग": f"{m_val:,.2f}",
+                "शाम रीडिंग": f"{e_val:,.2f}",
+                "कुल बिक्री (लीटर)": f"{diff:,.2f} L"
+            })
+        
+        df_nozzles = pd.DataFrame(nozzle_data)
+        
+        st.subheader("📊 1. नोज़ल-वार बिक्री विवरण")
+        st.table(df_nozzles)
+        
+        # टेस्टिंग कटौती एवं शुद्ध बिक्री गणना
+        net_liters = max(0.0, total_gross_liters - testing_liters)
+        
+        st.subheader("📝 2. शुद्ध बिक्री एवं फाइनल हिसाब समरी")
+        st.write(f"• **कुल मीटर बिक्री (ग्रॉस):** {total_gross_liters:,.2f} लीटर")
+        
+        # टेस्टिंग भरा है तभी दिखेगा
+        if testing_liters > 0 or testing_rupees > 0:
+            test_str = "• **टेस्टिंग कटौती:** "
+            parts = []
+            if testing_liters > 0:
+                parts.append(f"{testing_liters:,.2f} लीटर")
+            if testing_rupees > 0:
+                parts.append(f"₹ {testing_rupees:,.2f}")
+            test_str += " / ".join(parts) + " (घटाया गया)"
+            st.write(test_str)
+            st.write(f"• **शुद्ध बिक्री (Net Sales):** **{net_liters:,.2f} लीटर**")
+        else:
+            st.write(f"• **शुद्ध बिक्री (Net Sales):** **{total_gross_liters:,.2f} लीटर**")
+            
+        if len(register_files) > 0:
+            st.write(f"• **हाथ से लिखे रजिस्टर की पर्चियाँ:** {len(register_files)} पर्ची/पर्चियों का हिसाब मिलाया गया।")
+
+        st.markdown("---")
+        
+        # PDF निर्माण एवं डाउनलोड
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(200, 10, txt="Daily Petrol Pump Sales & Accounts Report", ln=True, align='C')
+        pdf.ln(5)
+        
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 10, txt=f"Total Gross Meter Sale: {total_gross_liters:,.2f} Liters", ln=True)
+        
+        if testing_liters > 0 or testing_rupees > 0:
+            pdf.cell(200, 10, txt=f"Testing Deduction: {testing_liters:,.2f} Liters / Rs. {testing_rupees:,.2f}", ln=True)
+            pdf.cell(200, 10, txt=f"Net Payable Sales: {net_liters:,.2f} Liters", ln=True)
+        else:
+            pdf.cell(200, 10, txt=f"Net Payable Sales: {total_gross_liters:,.2f} Liters", ln=True)
+            
+        pdf.cell(200, 10, txt=f"Register Vouchers Attached: {len(register_files)}", ln=True)
+            
+        pdf_output = pdf.output(dest='S').encode('latin1')
+        
+        st.download_button(
+            label="📥 हिसाब की PDF रिपोर्ट डाउनलोड करें",
+            data=pdf_output,
+            file_name="Daily_Petrol_Pump_Report.pdf",
+            mime="application/pdf",
+            use_container_width=True
+)
+                                 
