@@ -1,27 +1,25 @@
 import streamlit as st
 import pandas as pd
-from fpdf import FPDF
 
 # --- पेज कॉन्फ़िगरेशन ---
 st.set_page_config(
-    page_title="पेट्रोल पंप मैनेजमेंट",
+    page_title="पेट्रोल पंप प्रबंधन",
     page_icon="⛽",
     layout="wide"
 )
 
-# सेशन स्टेट द्वारा पेज नेविगेशन कंट्रोल
+# सेशन स्टेट द्वारा पेज नेविगेशन
 if "current_page" not in st.session_state:
     st.session_state["current_page"] = "home"
 
 # ==========================================
-# 🏠 1. बाहर का मेन पेज (Dashboard / Home Page)
+# 🏠 1. मुख्य पेज (Home Page)
 # ==========================================
 if st.session_state["current_page"] == "home":
     st.title("⛽ पेट्रोल पंप प्रबंधन प्रणाली")
     st.markdown("---")
     
     st.subheader("📋 मुख्य विकल्प (Menu)")
-    st.write("नीचे दिए गए ऑप्शन पर क्लिक करके नया हिसाब पेज खोलें:")
     
     col1, col2 = st.columns(2)
     
@@ -34,47 +32,34 @@ if st.session_state["current_page"] == "home":
 
     with col2:
         st.success("### 📊 स्टॉक व बिक्री रिपोर्ट्स")
-        st.write("पुराने दैनिक हिसाब, रीडिंग रिकॉर्ड्स और बिक्री की समरी रिपोर्ट देखें।")
+        st.write("पुराने दैनिक हिसाब और बिक्री की समरी रिपोर्ट देखें।")
         st.button("📁 रिपोर्ट्स देखें (शीघ्र उपलब्ध)", disabled=True, use_container_width=True)
 
 # ==========================================
-# 📄 2. नया हिसाब-किताब पेज (New Page)
+# 📄 2. नया हिसाब-किताब पेज
 # ==========================================
 elif st.session_state["current_page"] == "hisab_page":
     
-    # वापस मुख्य पेज पर जाने का बटन
     if st.button("⬅️ मुख्य मेनू (Home) पर वापस जाएँ"):
         st.session_state["current_page"] = "home"
         st.rerun()
 
-    st.title("📝 2. दैनिक जमा-खर्च व हिसाब पर्ची")
+    st.title("📝 दैनिक जमा-खर्च व हिसाब पर्ची")
     st.markdown("---")
 
-    # ------------------------------------------
-    # (A) 8 नोज़ल रीडिंग - पर्ची + मैन्युअल टाइपिंग
-    # ------------------------------------------
+    # (A) 8 नोज़ल रीडिंग - पर्ची + टाइपिंग
     st.header("1. नोज़ल रीडिंग दर्ज करें (8 नोज़ल्स)")
     st.info("आप चाहें तो पर्चियों की फोटो अपलोड करें या नीचे सीधे रीडिंग टाइप करें। दोनों तरीकों से सही हिसाब मिल जाएगा।")
 
     col_m_files, col_e_files = st.columns(2)
 
-    # सुबह की पर्चियाँ (4 ऑप्शन)
     with col_m_files:
         st.subheader("🌅 सुबह की नोज़ल पर्चियाँ (Opening)")
-        m_files = []
-        for i in range(1, 5):
-            f = st.file_uploader(f"सुबह की पर्ची {i}", type=["jpg", "jpeg", "png"], key=f"m_file_{i}")
-            if f:
-                m_files.append(f)
+        m_files = [st.file_uploader(f"सुबह की पर्ची {i}", type=["jpg", "jpeg", "png"], key=f"m_file_{i}") for i in range(1, 5)]
 
-    # शाम की पर्चियाँ (4 ऑप्शन)
     with col_e_files:
         st.subheader("🌆 शाम की नोज़ल पर्चियाँ (Closing)")
-        e_files = []
-        for i in range(1, 5):
-            f = st.file_uploader(f"शाम की पर्ची {i}", type=["jpg", "jpeg", "png"], key=f"e_file_{i}")
-            if f:
-                e_files.append(f)
+        e_files = [st.file_uploader(f"शाम की पर्ची {i}", type=["jpg", "jpeg", "png"], key=f"e_file_{i}") for i in range(1, 5)]
 
     st.markdown("#### 🔢 मैन्युअल नोज़ल रीडिंग दर्ज करें (8 नोज़ल्स):")
     col_read1, col_read2 = st.columns(2)
@@ -98,11 +83,9 @@ elif st.session_state["current_page"] == "hisab_page":
 
     st.markdown("---")
 
-    # ------------------------------------------
-    # (B) सुबह की टेस्टिंग (Testing Oil Input)
-    # ------------------------------------------
+    # (B) सुबह की टेस्टिंग
     st.header("2. सुबह की टेस्टिंग")
-    st.caption("यदि कोई टेस्टिंग हुई है तो लीटर या रुपये दर्ज करें। यदि खाली छोड़ेंगे तो नीचे हिसाब में टेस्टिंग प्रदर्शित नहीं होगी।")
+    st.caption("यदि कोई टेस्टिंग हुई है तो लीटर या रुपये दर्ज करें। यदि खाली छोड़ेंगे तो नीचे हिसाब में प्रदर्शित नहीं होगी।")
 
     col_t1, col_t2 = st.columns(2)
     with col_t1:
@@ -112,9 +95,7 @@ elif st.session_state["current_page"] == "hisab_page":
 
     st.markdown("---")
 
-    # ------------------------------------------
-    # (C) दैनिक जमा-खर्च (रजिस्टर पर्चियाँ - 4 ऑप्शन)
-    # ------------------------------------------
+    # (C) दैनिक जमा-खर्च पर्चियाँ (4 ऑप्शन)
     st.header("3. हाथ से लिखे दैनिक रजिस्टर की पर्चियाँ")
     st.caption("रजिस्टर की फोटो अपलोड करें (4 अलग-अलग ऑप्शन)।")
 
@@ -128,13 +109,10 @@ elif st.session_state["current_page"] == "hisab_page":
 
     st.markdown("---")
 
-    # ------------------------------------------
     # (D) स्वचालित हिसाब मिलाएँ बटन
-    # ------------------------------------------
     if st.button("🔄 स्वचालित हिसाब मिलाएँ", type="primary", use_container_width=True):
         st.success("हिसाब सफलतापूर्वक मिल गया है!")
         
-        # 8 नोज़ल की बिक्री गणना
         nozzle_data = []
         total_gross_liters = 0.0
         
@@ -155,13 +133,11 @@ elif st.session_state["current_page"] == "hisab_page":
         st.subheader("📊 1. नोज़ल-वार बिक्री विवरण")
         st.table(df_nozzles)
         
-        # टेस्टिंग कटौती एवं शुद्ध बिक्री गणना
         net_liters = max(0.0, total_gross_liters - testing_liters)
         
         st.subheader("📝 2. शुद्ध बिक्री एवं फाइनल हिसाब समरी")
         st.write(f"• **कुल मीटर बिक्री (ग्रॉस):** {total_gross_liters:,.2f} लीटर")
         
-        # टेस्टिंग भरा है तभी दिखेगा
         if testing_liters > 0 or testing_rupees > 0:
             test_str = "• **टेस्टिंग कटौती:** "
             parts = []
@@ -175,36 +151,23 @@ elif st.session_state["current_page"] == "hisab_page":
         else:
             st.write(f"• **शुद्ध बिक्री (Net Sales):** **{total_gross_liters:,.2f} लीटर**")
             
-        if len(register_files) > 0:
-            st.write(f"• **हाथ से लिखे रजिस्टर की पर्चियाँ:** {len(register_files)} पर्ची/पर्चियों का हिसाब मिलाया गया।")
+        uploaded_reg_count = sum(1 for f in register_files if f is not None)
+        if uploaded_reg_count > 0:
+            st.write(f"• **हाथ से लिखे रजिस्टर की पर्चियाँ:** {uploaded_reg_count} पर्ची/पर्चियों का हिसाब मिलाया गया।")
 
         st.markdown("---")
         
-        # PDF निर्माण एवं डाउनलोड
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", 'B', 16)
-        pdf.cell(200, 10, txt="Daily Petrol Pump Sales & Accounts Report", ln=True, align='C')
-        pdf.ln(5)
-        
-        pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt=f"Total Gross Meter Sale: {total_gross_liters:,.2f} Liters", ln=True)
-        
-        if testing_liters > 0 or testing_rupees > 0:
-            pdf.cell(200, 10, txt=f"Testing Deduction: {testing_liters:,.2f} Liters / Rs. {testing_rupees:,.2f}", ln=True)
-            pdf.cell(200, 10, txt=f"Net Payable Sales: {net_liters:,.2f} Liters", ln=True)
-        else:
-            pdf.cell(200, 10, txt=f"Net Payable Sales: {total_gross_liters:,.2f} Liters", ln=True)
-            
-        pdf.cell(200, 10, txt=f"Register Vouchers Attached: {len(register_files)}", ln=True)
-            
-        pdf_output = pdf.output(dest='S').encode('latin1')
+        # टेक्स्ट / CSV डाउनलोड विकल्प (बिना किसी बाहरी लाइब्रेरी एरर के)
+        summary_text = f"पेट्रोल पंप दैनिक रिपोर्ट\n"
+        summary_text += f"कुल ग्रॉस बिक्री: {total_gross_liters} L\n"
+        summary_text += f"टेस्टिंग: {testing_liters} L / Rs.{testing_rupees}\n"
+        summary_text += f"शुद्ध बिक्री: {net_liters} L\n"
         
         st.download_button(
-            label="📥 हिसाब की PDF रिपोर्ट डाउनलोड करें",
-            data=pdf_output,
-            file_name="Daily_Petrol_Pump_Report.pdf",
-            mime="application/pdf",
+            label="📥 दैनिक रिपोर्ट डाउनलोड करें (Text)",
+            data=summary_text,
+            file_name="Daily_Report.txt",
+            mime="text/plain",
             use_container_width=True
-)
-                                 
+    )
+    
